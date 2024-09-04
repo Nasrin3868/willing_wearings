@@ -1,0 +1,187 @@
+
+<%-include("../partials/userheader")-%>
+    <main class="main">
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="index.html" rel="nofollow">Home</a>
+                    <span></span> Shop
+                    <span></span> Your Cart
+                </div>
+            </div>
+        </div>
+        <section class="mt-50 mb-50">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <% if (userdata && userdata.cart.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table shopping-summery text-center clean">
+                                <thead>
+                                    <tr class="main-heading">
+                                        <th scope="col">Image</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Quantity</th>
+                                        <th scope="col">Subtotal</th>
+                                        <th scope="col">Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% userdata.cart.forEach(cartItem => { %>
+                                        <tr>
+                                            <td class="image product-thumbnail">
+                                                <a href="/productview/<%= cartItem.product._id %>">
+                                                    <img src="<%= cartItem.product.images[0] %>" alt="Product Image">
+                                                </a>
+                                            </td>
+                                            <td class="product-des product-name">
+                                                <h5 class="product-name">
+                                                    <a style="color: rgb(12, 111, 129);"><%= cartItem.product.name %></a>
+                                                </h5>
+                                                <p class="font-xs"><%= cartItem.product.description %></p>
+                                            </td>
+                                            <td class="price" data-title="Price">
+                                                <span>Rs.<%= cartItem.product.sellingprice %></span>
+                                            </td>
+                                            <!-- Update the quantity and total price based on user interactions -->
+                                            <td class="text-center" data-title="Stock">
+                                                <div class="detail-qty border radius m-auto">
+                                                    <a class="qty-up" onclick="increaseQuantity('<%= cartItem.product._id %>','<%= cartItem.product.sellingprice %>','<%= cartItem.product.stock %>')">
+                                                        <i class="fi-rs-angle-small-up"></i>
+                                                    </a>
+                                                    <span class="qty-val" id="qty-<%= cartItem.product._id %>"> <%= cartItem.quantity %> </span>
+                                                    <a class="qty-down" onclick="decreaseQuantity('<%= cartItem.product._id %>','<%= cartItem.product.sellingprice %>','<%= cartItem.product.stock %>')">
+                                                        <i class="fi-rs-angle-small-down"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td class="text-right" data-title="Cart">
+                                                <span id="total-price-<%= cartItem.product._id %>">Rs.<span id="total-<%= cartItem.product._id %>"><%= ((cartItem.product.sellingprice * cartItem.quantity).toFixed(2)) %></span></span>
+                                            </td>
+                                            <td class="action" data-title="Remove">
+                                                <a href="/cartproductdelete/<%= cartItem.product._id %>" class="text-muted"><i class="fi-rs-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="cart-action text-end">
+                            <a class="btn   mr-10 mb-sm-15" href="/placeorder?offer=0&&errmessage&&msg"><i class="fi-rs-shuffle mr-10"></i>proceed to pay</a>
+                            <a class="btn " href="/home"><i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping</a>
+                        </div> 
+                        <% } else { %>
+                            <div class="container ">
+                                <div class="row justify-content-center align-items-center pt-50 pb-50">
+                                    <div class="col-lg-5">
+                                        <div class="padding_eight_all bg-white">
+                                            <div class="alert text-center" role="alert">
+                                                <h4>No items in the cart...!</h4>
+                                            </div>
+                                            <div class="text-center ">
+                                            <a class="btn " href="/home"><i class="fi-rs-shopping-bag mr-10"></i>Go to Shopping</a>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+   
+    <%-include("../partials/userfooter")-%>
+
+<script>
+   function updateQuantity(product,price, quantity) {
+        // Update quantity display
+        const qtyElement = document.getElementById(`qty-${product}`);
+        qtyElement.textContent = quantity;
+        qtyElement.innerText = quantity;
+
+        // Update total price
+        const sellingPrice = parseFloat(document.getElementById(`total-price-${product}`).textContent.slice(1)); 
+        const totalPriceElement = document.getElementById(`total-${product}`);
+        totalPriceElement.textContent = (sellingPrice * quantity)
+        totalPriceElement.innerHTML=(price * quantity);
+        const total=(price * quantity);
+       
+        
+
+        const updatedCartItem = {
+              productid: product,
+              quantity: quantity,
+              total:total
+};
+const updateCartTotal={
+    productid:product,
+    quantity:quantity
+}
+updateCartItemInDatabase(updatedCartItem)
+
+    calculateCartSubtotalAsync()
+        .then(cartSubtotal => {
+            // Update the cart subtotal element
+            const cartSubtotalElement = document.getElementById('cart-subtotal');
+            cartSubtotalElement.textContent = 'Rs.' + cartSubtotal.toFixed(2);
+            cartSubtotalElement.innerText = 'Rs.' + cartSubtotal.toFixed(2);
+        });
+
+    }
+
+    function increaseQuantity(product,price,stock) {
+        const qtyElement = document.getElementById(`qty-${product}`);
+        let quantity = parseInt(qtyElement.textContent, 10);
+        if(stock>quantity){
+            quantity++;
+        }
+        updateQuantity(product,price, quantity);
+       
+    }
+
+    function decreaseQuantity(product,price,stock) {
+        const qtyElement = document.getElementById(`qty-${product}`);
+        let quantity = parseInt(qtyElement.textContent, 10);
+        if (quantity > 1) {
+            quantity--;
+            updateQuantity(product,price, quantity);
+            
+        }
+    }
+    
+    
+    function updateCartItemInDatabase(cartItem) {
+        // Replace with your actual API endpoint for updating cart items
+        const apiUrl = '/cartUpdate';
+    
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(cartItem)
+        })
+        .then(response => response.json())
+        .then(data => {
+        })
+        .catch(error => {
+            console.error('Error updating cart item:', error);
+        });
+    }
+    // Function to calculate cart subtotal asynchronously
+function calculateCartSubtotalAsync() {
+    return new Promise((resolve, reject) => {
+        let cartSubtotal = 0;
+        if (userdata && userdata.cart.length > 0) {
+            userdata.cart.forEach(cartItem => {
+                cartSubtotal += cartItem.product.sellingprice * cartItem.quantity;
+            });
+        }
+        resolve(cartSubtotal);
+    })
+}
+
+    </script>

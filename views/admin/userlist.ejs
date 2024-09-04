@@ -1,0 +1,80 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+$(document).ready(function () {
+    new DataTable('#example');
+            
+})
+</script>
+
+<%-include("../partials/adminheader")-%>
+
+<section class="content-main">
+    <div class="content-header">
+        <h2 class="content-title">User Details</h2>
+        
+    </div>
+    <div class="card mb-4">
+        
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="example">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>                            
+                            <th>Phone no.</th>
+                            <th>Status</th>
+                            <th> Action </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(function(user) { %>                         
+                        <tr>
+                            <td width="20%">                               
+                                    <div class="info pl-3">
+                                        <h6 class="mb-0 title"><%= user.username %></h6>                                       
+                                    </div>
+                            </td>
+                            <td>
+                                <div class="info pl-3">
+                                    <h6 class="mb-0 title"><%= user.email %></h6>                                       
+                                </div>
+                            </td>
+                            <td>
+                                <div class="info pl-3">
+                                    <h6 class="mb-0 title"><%= user.mobile %></h6>                                       
+                                </div>
+                            </td>
+                            <td>
+                                <div class="info pl-3">
+                                    <% if (user.blocked==true) { %>
+                                        <p>blocked</p>
+                                    <% } else { %>
+                                        <p>unblock</p>                                        
+                                    <% } %>                                      
+                                </div>
+                            </td>
+                            <td>
+                                <div class="info pl-3">
+                                    <% if (user.blocked==true) { %>
+                                        <a class="btn btn-primary btn-sm rounded" style="background-color: rgb(198, 51, 51);" href="/admin/userblock/<%= user._id %>">Unblock</a>
+                                    <% } else { %>
+                                        <a class="btn btn-primary btn-sm rounded" style="background-color: rgb(51, 134, 51);" href="/admin/userblock/<%= user._id %>">Block</a>                                       
+                                    <% } %>                                      
+                                </div>
+                            </td>
+                            
+                        </tr>
+                        <% }); %>
+                        
+                    </tbody>
+                </table> <!-- table-responsive.// -->
+            </div>
+        </div> <!-- card-body end// -->
+    </div> <!-- card end// -->
+</section> <!-- content-main end// -->
+
+<%-include("../partials/adminfooter")-%>
+

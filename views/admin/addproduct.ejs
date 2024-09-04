@@ -1,0 +1,249 @@
+<%-include("../partials/adminheader")-%>
+
+<section class="content-main">
+    <div class="row">
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title">Add New Product</h2>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Basic</h4>
+                </div>
+                <div class="card-body">
+                    <form action="/admin/addproduct" onsubmit="return validateform()" method="post" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label for="product_name" class="form-label">Product Name</label>
+                            <input type="text" placeholder="Type here" class="form-control" id="product_name" name="name">
+                            <span id="name-error" style="color: red;"></span> <!-- Fixed ID name -->
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Description</label>
+                            <textarea placeholder="Type here" class="form-control" rows="4" id="product_description" name="description"></textarea>
+                            <span id="description-error" style="color: red;"></span>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Price</label>
+                                    <input placeholder="Rs." type="text" class="form-control" id="product_price" name="price">
+                                    <span id="price-error" style="color: red;"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Discount percentage(%)</label>
+                                    <input placeholder="Rs." type="text" class="form-control" id="product_discount" name="discount">
+                                    <span id="discount-error" style="color: red;"></span>
+                                </div>
+                            </div>
+                            <!-- <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Selling price</label>
+                                    <input placeholder="Rs." type="text" class="form-control" id="product_sellingprice" name="sellingprice">
+                                    <span id="sellingprice-error" style="color: red;"></span>
+                                </div>
+                            </div> -->
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Size</label>
+                                    <select class="form-select" id="product_size" name="size">
+                                        <option> S </option>
+                                        <option> M </option>
+                                        <option> L </option>
+                                        <option> X </option>
+                                        <option> XL </option>
+                                        <option> XXL </option>
+                                        <option> Free Size </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Brand</label>
+                                    <select class="form-select" id="product_brand" name="brand">
+                                        <option> fwd </option>
+                                        <option> soch </option>
+                                        <option> aurelia </option>
+                                        <option> forever 21 </option>
+                                        <option> nike </option>
+                                        <option> puma </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Stock</label>
+                                    <input placeholder="Type here" type="text" class="form-control" id="product_stock" name="stock">
+                                    <span id="stock-error" style="color: red;"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Colour</label>
+                                    <input placeholder="Type here" type="text" class="form-control" id="product_colour" name="colour">
+                                    <span id="colour-error" style="color: red;"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h4>Media</h4>
+                                </div>
+                                <div class="card-body">
+
+                                    <div class="input-upload">
+                                        <img src="/admin-assets/imgs/theme/upload.svg" alt="">
+                                        <input type="file" id="productImage" name="images" accept="image/*" multiple required>
+                                    </div>
+                                    <span id="image-upload-error" style="color: red;"></span>
+                                </div>
+                            </div>
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h4>Organization</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row gx-2">
+                                        <div class="col-sm-6 mb-3">
+                                            <label class="form-label">Category</label>
+                                            <select class="form-select" id="product_category" name="category">
+                                                <% categories.forEach(function(category) { %>
+                                                    <option> <%= category.name %> </option>
+                                                <% }); %>
+                                            </select>
+                                        </div>
+                                    </div> <!-- row.// -->
+                                </div>
+                            </div> <!-- card end// -->
+                        </div>
+                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Publish</button>
+                    </form>
+                </div>
+            </div> <!-- card end// -->
+        </div>
+    </div>
+</section> <!-- content-main end// -->
+
+<%-include("../partials/adminfooter")-%>
+
+<script>
+    function validateform() {
+        console.log("validateform function called");
+        document.getElementById('name-error').innerHTML = '';
+        document.getElementById('description-error').innerHTML = '';
+        document.getElementById('price-error').innerHTML = '';
+        // document.getElementById('sellingprice-error').innerHTML = '';
+        document.getElementById('stock-error').innerHTML = '';
+        document.getElementById('colour-error').innerHTML = '';
+        document.getElementById('discount-error').innerHTML = '';
+
+        var name = document.getElementById('product_name').value;
+        var description = document.getElementById('product_description').value;
+        var price = document.getElementById('product_price').value;
+        // var sellingprice = document.getElementById('product_sellingprice').value;
+        var stock = document.getElementById('product_stock').value;
+        var colour = document.getElementById('product_colour').value;
+        var discount = document.getElementById('product_discount').value;
+
+        var nameRegex = /^[A-Z][A-Za-z ]{0,19}$/;
+        if (name === '' || name.trim() === '') {
+            document.getElementById('name-error').innerHTML = 'Name is required.';
+            return false;
+        }
+        if (!name.match(nameRegex)) {
+            document.getElementById('name-error').innerHTML = 'Enter a valid name.';
+            return false;
+        }
+
+        var descriptionRegex = /^[A-Za-z0-9 !@#$%^&*()_+{}[\]:;<>,.?~/\\-]*$/;
+        if (description === '' || description.trim() === '') {
+            document.getElementById('description-error').innerHTML = 'Description field cannot be empty.';
+            return false;
+        }
+        if (!description.match(descriptionRegex)) {
+            document.getElementById('description-error').innerHTML = 'Enter a valid description.';
+            return false;
+        }
+
+        var priceRegex = /^[1-9]\d{0,6}$/;
+        if (price === '' || price.trim() === '') {
+            document.getElementById('price-error').innerHTML = 'Price is required.';
+            return false;
+        }
+        if (!price.match(priceRegex)) {
+            document.getElementById('price-error').innerHTML = 'Enter a valid price.';
+            return false;
+        }
+
+        const numRegex= /^[0-9]+$/
+        if(discount ==''||discount.trim()==''){
+            document.getElementById('discount-error').innerHTML = 'Discount percentage is required.';
+            setTimeout(function() {
+                document.getElementById('discount-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(!discount.match(numRegex)){
+            document.getElementById('discount-error').innerHTML = 'Write only the percentage count (dont use % symbol)';
+            setTimeout(function() {
+                document.getElementById('discount-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(discount>91){
+            document.getElementById('discount-error').innerHTML = 'Discount should be upto 90% ';
+            setTimeout(function() {
+                document.getElementById('discount-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        // var sellingpriceRegex = /^[1-9]\d{0,6}$/;
+        // if (sellingprice === '' || sellingprice.trim() === '') {
+        //     document.getElementById('sellingprice-error').innerHTML = 'Selling price is required.';
+        //     return false;
+        // }
+        // if (!sellingprice.match(sellingpriceRegex)) {
+        //     document.getElementById('sellingprice-error').innerHTML = 'Enter a valid price.';
+        //     return false;
+        // }
+
+        var stockRegex = /^[0-9]\d{0,6}$/;
+        if (stock === '' || stock.trim() === '') {
+            document.getElementById('stock-error').innerHTML = 'Stock is required.';
+            return false;
+        }
+        if (!stock.match(stockRegex)) {
+            document.getElementById('stock-error').innerHTML = 'Enter a valid number.';
+            return false;
+        }
+
+        var colourRegex = /^[A-Z][A-Za-z ]{0,19}$/;
+        if (colour === '' || colour.trim() === '') {
+            document.getElementById('colour-error').innerHTML = 'Colour is required.';
+            return false;
+        }
+        if (!colour.match(colourRegex)) {
+            document.getElementById('colour-error').innerHTML = 'Enter a valid colour.';
+            return false;
+        }
+
+        // Check if at least one image is uploaded
+        const fileInput = document.getElementById('productImage');
+        if (fileInput.files.length === 0) {
+            document.getElementById('image-upload-error').textContent = 'Please select one or more images.';
+            return false;
+        }else if(fileInput.files.length >4){
+            document.getElementById('image-upload-error').textContent = 'cannot upload more than 4 images ';
+            return false;
+        }
+
+        return true;
+    }
+</script>

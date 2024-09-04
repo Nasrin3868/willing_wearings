@@ -1,0 +1,153 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+$(document).ready(function () {
+    new DataTable('#example');
+            
+})
+</script>
+
+<%-include("../partials/adminheader")-%>
+
+
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Referral Management </h2>
+                <p>Edit referral amount</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4>Referral amount</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row gx-2">
+                                    <div class="col-sm-6 mb-3">
+                                        <p class="fw-bold pb-10">Referrer:</p>
+                                        <p class="text-center fw-bold" style="font-size: x-large;;">Rs: <%= referral.referrer%></p>
+                                        <p class="fw-bold pb-10 pt-20">Referee:</p>
+                                        <p class="text-center fw-bold" style="font-size: x-large;;">Rs: <%= referral.referee %></p>
+                                        <div class="pt-25 d-flex justify-content-center">
+                                            <a onclick="showEditReferralForm('<%= referral.referrer%>','<%= referral.referee%>') " class="btn btn-primary btn-sm rounded" >Edit</a>
+                                        </div>
+                                    </div>
+                                </div> <!-- row.// -->
+                            </div>
+                        </div> 
+                        <form onsubmit="return referralValidation()"  method="post" action="/admin/editreferral" style="display: none;" id="editReferralForm">
+                            <% if (errmessage) { %>
+                                <div class="alert alert-danger text-center" role="alert">
+                                    <%= errmessage %>
+                                </div>
+                            <% }%>
+                                <div class="mb-4">
+                                    <label for="product_name" class="form-label">Referrer:</label>
+                                    <input type="text" placeholder="Type here" class="form-control pt-20 pb-20" id="referrer" name="referrer" value="">
+                                    <span id="referrerError" style="color: red;"></span><br>
+                                    <label for="product_name" class="form-label pt-25">Referee</label>
+                                    <input type="text" placeholder="Type here" class="form-control pt-20 pb-20" id="referee" name="referee">
+                                    <span id="refereeError" style="color: red;"></span><br>
+                                </div>                            
+                                <div class="d-grid">
+                                    <button class="btn btn-primary" type="submit"  >Edit</button>
+                                </div>
+                            <input type="hidden" id="editCategoryId" name="editCategoryId">
+                        </form>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="example">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" width="20%">User name</th>
+                                        <th class="text-center" width="20%">User email</th>
+                                        <th class="text-center" width="20%">Referral count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% user.forEach(function(User){ %>
+                                    <tr>
+                                        <td class="text-center" width="20%"><b><%= User.username %></b></td>
+                                        <td class="text-center" width="20%"><b><%= User.email %></b></td>
+                                        <td class="text-center" width="20%"><b><%= User.referral_count %></b></td>
+                                    </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- .col// -->
+                </div> <!-- .row // -->
+            </div> <!-- card body .// -->
+        </div> <!-- card .// -->
+    </section> <!-- content-main end// -->
+
+    <script>
+
+    function showEditReferralForm(referrer,referee){
+        document.getElementById('editReferralForm').style.display = 'block';
+        document.getElementById('referrer').value = referrer;
+        document.getElementById('referee').value = referee;
+
+
+        
+    }
+    
+    function referralValidation() {
+        // alert("saj:",document.getElementById('referrer').value)
+      // Input fields
+      const referrer = document.getElementById('referrer').value;
+      const referee = document.getElementById('referee').value;
+      // Error fields
+      document.getElementById('referrerError');
+      document.getElementById('refereeError');
+      // Regex
+      const referralRegex = /^[1-9]\d{0,10}$/;
+
+      if (referrer === '' || referrer.trim() === '') {
+            document.getElementById('referrerError').innerHTML = 'Referral is required.';
+            setTimeout(function() {
+                document.getElementById('referrerError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!referrer.match(referralRegex)) {
+            document.getElementById('referrerError').innerHTML = 'Only positive numbers are allowded.';
+            setTimeout(function() {
+                document.getElementById('referrerError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if(referrer>1000){
+            document.getElementById('referrerError').innerHTML = 'It should be less than 1000.';
+            setTimeout(function() {
+                document.getElementById('referrerError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if (referee === '' || referee.trim() === '') {
+            document.getElementById('refereeError').innerHTML = 'Referee is required.';
+            setTimeout(function() {
+                document.getElementById('refereeError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!referee.match(referralRegex)) {
+            document.getElementById('refereeError').innerHTML = 'Only numbers are allowded.';
+            setTimeout(function() {
+                document.getElementById('refereeError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        return true;
+    }
+
+    </script>
+
+<%-include("../partials/adminfooter")-%>

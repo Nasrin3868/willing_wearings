@@ -1,0 +1,351 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+$(document).ready(function () {
+    new DataTable('#example');
+            
+})
+</script>
+
+<%-include("../partials/adminheader")-%>
+
+
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Categories </h2>
+                <p>Add, edit or delete a category</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <form onsubmit="return categorynameValidation()"  method="post" action="/admin/addcategory" id="createCategoryForm">
+                            <% if (errmessage) { %>
+                                <div class="alert alert-danger text-center" role="alert">
+                                    <%= errmessage %>
+                                </div>
+                            <% }%>
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Name</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="name" name="name"/>
+                                <span id="nameError" style="color: red;"></span><br>
+                                <select class="form-select" name="category">
+                                    <% const uniqueCategoryTypes = Array.from(new Set(categories.map(category => category.type))) %>
+                                    <% uniqueCategoryTypes.forEach(function(categoryType) { %>
+                                        <option> <%= categoryType %> </option>
+                                    <% }); %>
+                                </select>
+                                <label for="product_name" class="form-label pt-20">Offer percentage ( less than 10% )</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="percentage" name="category_percentage"/>
+                                <span id="percentageError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Valid from:</label>
+                                <input type="date" placeholder="Type here" class="form-control" id="from" name="valid_from"/>
+                                <span id="fromError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Valid To:</label>
+                                <input type="date" placeholder="Type here" class="form-control" id="to" name="valid_to"/>
+                                <span id="toError" style="color: red;"></span><br>
+                            </div>                            
+                            <div class="d-grid">
+                                <button class="btn btn-primary" type="submit">Create category</button>
+                            </div>
+                        </form>
+                        <form onsubmit="return editCategoryValidation()"  method="post" action="/admin/editcategory" style="display: none;" id="editCategoryForm">
+                            <% if (errmessage) { %>
+                                <div class="alert alert-danger text-center" role="alert">
+                                    <%= errmessage %>
+                                </div>
+                            <% }%>
+                            <input type="hidden" id="editCategoryId" name="editCategoryId">
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Name</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="editCategoryName" name="name">
+                                <span id="editnameError" style="color: red;"></span><br>
+                                <select class="form-select" name="editcategory" id="editcategoryType">
+                                    <% const uniqueCategoryTypesForEdit = Array.from(new Set(categories.map(category => category.type))) %>
+                                    <% uniqueCategoryTypesForEdit.forEach(function(categoryType) { %>
+                                        <option> <%= categoryType %> </option>
+                                    <% }); %>
+                                </select>
+                                <label for="product_name" class="form-label pt-20">Offer percentage ( less than 10% )</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="editpercentage" name="editcategory_percentage"/>
+                                <span id="editpercentageError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Valid from:</label>
+                                <input type="date" placeholder="Type here" class="form-control" id="editfrom" name="editvalid_from"/>
+                                <span id="editfromError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Valid To:</label>
+                                <input type="date" placeholder="Type here" class="form-control" id="editto" name="editvalid_to"/>
+                                <span id="edittoError" style="color: red;"></span><br>
+                            </div>                            
+                            <div class="d-grid">
+                                <button class="btn btn-primary" type="submit"  >Edit category</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="example">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" width="15%">Name</th>
+                                        <th class="text-center" width="15%">Type</th>
+                                        <th class="text-center" width="15%">Discount</th>
+                                        <th class="text-center" width="15%">Valid from</th>
+                                        <th class="text-center" width="15%">Valid to</th>
+                                        <th class="text-center" width="20%">Edit</th>
+                                        <th class="text-center" width="20%">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% categories.forEach(function(category){ %>
+                                    <tr>
+                                        <td class="text-center" width="15%"><b><%= category.name %></b></td>
+                                        <td class="text-center" width="15%"><b><%= category.type %></b></td>
+                                        <td class="text-center" width="15%"><b><%= category.discount_percentage %> %</b></td>
+                                        <td class="text-center" width="15%">
+                                            <b>
+                                                <script>
+                                                    var dateString = '<%= category.valid_from %>'; 
+                                                    var date = new Date(dateString);
+                                                    var formattedDate = date.toLocaleDateString(); 
+                                                    document.write(formattedDate);
+                                                </script>
+                                            </b>
+                                        </td>
+                                        <td class="text-center" width="15%">
+                                            <b>
+                                                <script>
+                                                    var dateString = '<%= category.valid_to %>'; 
+                                                    var date = new Date(dateString);
+                                                    var formattedDate = date.toLocaleDateString(); 
+                                                    document.write(formattedDate);
+                                                </script>
+                                            </b>
+                                        </td>
+                                        <td class="text-center" width="20%">
+                                            <a onclick="showEditCategoryForm( '<%= category._id %>', '<%= category.name %>','<%= category.type %>','<%= category.discount_percentage %>','<%= category.valid_from %>','<%= category.valid_to %>') " class="btn btn-primary btn-sm rounded" >Edit</a>
+                                        </td>
+                                        <td>
+                                            <div width="20%" class="info pl-3 text-center">
+                                                <% if (category.blocked==true) { %>
+                                                    <a class="btn btn-primary btn-sm rounded" style="background-color: red;" href="/admin/categoryblock/<%= category._id %>">Block</a>
+                                                <% } else { %>
+                                                    <a class="btn btn-primary btn-sm rounded" style="background-color: green;" href="/admin/categoryblock/<%= category._id %>">Unblock</a>                                       
+                                                <% } %>                                      
+                                            </div>
+                                        </td>
+                                        
+                                        
+                                    </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- .col// -->
+                </div> <!-- .row // -->
+            </div> <!-- card body .// -->
+        </div> <!-- card .// -->
+    </section> <!-- content-main end// -->
+
+    <script>
+
+    function formatDate(dateString) {
+        var date = new Date(dateString);
+        var day = date.getDate();
+        var month = date.getMonth() + 1; // Months are 0-indexed
+        var year = date.getFullYear();
+
+        // Add leading zeros if day or month is less than 10
+        var formattedDate = year +'-'+ (month < 10?'0':'') + month +'-'+ (day<10?'0':'') + day  ;
+        return formattedDate;
+    }
+
+    function showEditCategoryForm(categoryId, categoryName, categoryType,percentage,validFrom,validTo){
+        document.getElementById('createCategoryForm').style.display = 'none';
+        document.getElementById('editCategoryForm').style.display = 'block';
+
+        var validFromFormatted = formatDate(validFrom);
+        var validToFormatted = formatDate(validTo);
+
+        document.getElementById('editCategoryName').value = categoryName;
+        document.getElementById('editCategoryId').value = categoryId;
+        document.getElementById('editcategoryType').value = categoryType;
+        document.getElementById('editpercentage').value = percentage;
+        document.getElementById('editfrom').value = validFromFormatted;
+        document.getElementById('editto').value = validToFormatted;
+
+    }
+    function categorynameValidation() {
+     
+        var name = document.getElementById('name').value;
+        var percentage = document.getElementById('percentage').value;
+        var from = document.getElementById('from').value;
+        var to = document.getElementById('to').value;
+
+        document.getElementById('nameError').innerHTML = '';
+        document.getElementById('percentageError').innerHTML = '';
+        document.getElementById('fromError').innerHTML = '';
+        document.getElementById('toError').innerHTML = '';
+
+        const nameRegex = /^[A-Z][a-zA-Z\s]*$/;
+        const numRegex= /^[0-9]+$/
+        const codeRegex= /^[A-Za-z0-9]*$/
+        
+
+        if(name==''||name.trim()==''){
+            document.getElementById('nameError').innerHTML = 'Name is required.';
+            setTimeout(function() {
+                document.getElementById('nameError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if(!name.match(nameRegex)){
+            document.getElementById('nameError').innerHTML = 'Please enter a valid name with only letters and start with a capital letter.';
+            setTimeout(function() {
+                document.getElementById('nameError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(percentage ==''||percentage.trim()==''){
+            document.getElementById('percentageError').innerHTML = 'Percentage is required.';
+            setTimeout(function() {
+                document.getElementById('percentageError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(!percentage.match(numRegex)){
+            document.getElementById('percentageError').innerHTML = 'Write only the count (dont use % symbol).';
+            setTimeout(function() {
+                document.getElementById('percentageError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(percentage>50){
+            document.getElementById('percentageError').innerHTML = 'It should be less than 10%.';
+            setTimeout(function() {
+                document.getElementById('percentageError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+
+        if(from.trim() == ''|| from ==''){
+            document.getElementById('fromError').innerHTML = 'Date is required.';
+            setTimeout(function() {
+                document.getElementById('fromError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if(to.trim() ==''||to==''){
+            document.getElementById('toError').innerHTML = 'Date is required.';
+            setTimeout(function() {
+                document.getElementById('toError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        from=new Date(from);
+        to=new Date(to);
+        if(from>to){
+            document.getElementById('toError').innerHTML = `This date should be greater than 'from' date.`;
+            setTimeout(function() {
+                document.getElementById('toError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        return true
+    }
+
+    function editCategoryValidation() {
+        
+        var name = document.getElementById('editCategoryName').value;
+        var percentage = document.getElementById('editpercentage').value;
+        var from = document.getElementById('editfrom').value;
+        var to = document.getElementById('editto').value;
+
+        document.getElementById('editnameError').innerHTML = '';
+        document.getElementById('editpercentageError').innerHTML = '';
+        document.getElementById('editfromError').innerHTML = '';
+        document.getElementById('edittoError').innerHTML = '';
+
+
+        const numRegex= /^[0-9]+$/
+        const codeRegex= /^[A-Za-z0-9]*$/
+        const nameRegex = /^[A-Z][a-zA-Z\s]*$/;
+
+        if(name==''||name.trim()==''){
+            document.getElementById('editnameError').innerHTML = 'Name is required.';
+            setTimeout(function() {
+                document.getElementById('editnameError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if(!name.match(nameRegex)){
+            document.getElementById('editnameError').innerHTML = 'Please enter a valid name with only letters and start with a capital letter.';
+            setTimeout(function() {
+                document.getElementById('editnameError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        
+        if(percentage ==''||percentage.trim()==''){
+            document.getElementById('editpercentageError').innerHTML = 'Discount percentage is required.';
+            setTimeout(function() {
+                document.getElementById('editpercentageError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(!percentage.match(numRegex)){
+            document.getElementById('editpercentageError').innerHTML = 'Write only the percentage count (dont use % symbol)';
+            setTimeout(function() {
+                document.getElementById('editpercentageError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(percentage>75|| percentage<=0){
+            document.getElementById('editpercentageError').innerHTML = 'It should be less than 75% and greater than 0%';
+            setTimeout(function() {
+                document.getElementById('editpercentageError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(from.trim() == ''|| from ==''){
+            document.getElementById('editfromError').innerHTML = 'Date is required.';
+            setTimeout(function() {
+                document.getElementById('fromError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if(to.trim() ==''||to==''){
+            document.getElementById('edittoError').innerHTML = 'Date is required.';
+            setTimeout(function() {
+                document.getElementById('edittoError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        from=new Date(from);
+        to=new Date(to);
+        if(from>to){
+            document.getElementById('edittoError').innerHTML = `This date should be greater than 'from' date.`;
+            setTimeout(function() {
+                document.getElementById('edittoError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        return true
+    }
+
+    </script>
+
+<%-include("../partials/adminfooter")-%>

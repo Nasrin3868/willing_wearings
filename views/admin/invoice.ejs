@@ -1,0 +1,70 @@
+<%-include("../partials/adminheader")-%>
+
+<section class="content-main">
+    <div class="card mb-4">
+        <header class="card-header" id="header">
+            <div class="text-end">
+            <button class="btn btn-secondary print ms-2 text-end" href="#" id="button"><i class="icon material-icons md-print" id="invoice"></i></button>
+        </div>
+            <h4 class="card-title text-center">Sales Report </h4>
+            <div class="text-center">
+                <p class="card-title fw-bold pt-10 pb-10" style="font-size: large; background-color: rgb(241, 158, 158);">Total Revenue: <%= totalFinalAmount %></p>
+            </div>
+        </header>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div class="table-responsive">
+                    <table class="table align-middle table-nowrap mb-0" id="example">
+                        <thead class="table-light">
+                            <tr class="text-center">
+                                <th class="align-middle" scope="col">Order ID</th>
+                                <th class="align-middle" scope="col">Billing Name</th>
+                                <th class="align-middle" scope="col">Date</th>
+                                <th class="align-middle" scope="col">Total</th>
+                                <th class="align-middle" scope="col">Payment Status</th>
+                                <th class="align-middle" scope="col">Payment Method</th>
+                                <!-- <th class="align-middle" scope="col">View Details</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% orders.forEach((order)=>{ %> 
+                            <tr class="text-center">
+                                <td><a href="#" class="fw-bold"><%= order._id %></a> </td>
+                                <td><%= order.user_id.username %></td>
+                                <td>
+                                    <script>
+                                        var dateString = '<%= order.created_on %>'; 
+                                        var date = new Date(dateString);
+                                        var formattedDate = date.toLocaleDateString(); 
+                                        document.write(formattedDate);
+                                    </script>
+                                </td>
+                                <td>
+                                    Rs.<%= order.finalAmount %>
+                                </td>
+                                <td>
+                                    <span class="badge badge-pill badge-soft-success"><%= order.payment_status %></span>
+                                </td>
+                                <td>
+                                    <i class="material-icons md-payment font-xxl text-muted mr-5"></i> <%= order.payment_method %>
+                                </td>
+                                <!-- <td>
+                                    <a href="/admin/orderDetails/<%= order._id %>" class="btn btn-xs"> View details</a>
+                                </td> -->
+                            </tr>
+                            <%}) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div> <!-- table-responsive end// -->
+    </section>
+
+<%-include("../partials/adminfooter")-%>
+
+<script>
+    document.getElementById("invoice").addEventListener("click",()=>{
+    document.getElementById('invoice').style.display = 'none';
+        window.print()
+    document.getElementById('invoice').style.display = 'block';
+    })
+</script>

@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+
+<!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-account-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:33 GMT -->
+<head>
+    <meta charset="utf-8">
+    <title>Willing Wearings Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/imgs/logo/logo_ww.png">
+    <!-- Template CSS -->
+    <link href="/admin-assets/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <main>
+        <header class="main-header style-2 navbar">
+            <div class="col-brand">
+                <a href="index.html" class="brand-wrap">
+                    <img src="/admin-assets/imgs/theme/logo.svg" class="logo" alt="Evara Dashboard">
+                </a>
+            </div>
+            <div class="col-nav">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </header>
+        <section class="content-main mt-80 mb-80">
+            <div class="card mx-auto card-login">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Admin Sign in</h4>
+                        <form onsubmit="return adminloginValidation()" method="post" action="/admin/adminsignin">
+                            <% if (errmessage) { %>
+                                <div class="alert alert-danger text-center" role="alert">
+                                    <%= errmessage %>
+                                </div>
+                            <% } else if (message) { %>
+                                <div class="alert alert-success text-center" role="alert">
+                                    <%= message %>
+                                </div>
+                            <% } %>
+                           
+                        <div class="mb-3">
+                            <input class="form-control" placeholder="Username or email" type="text" name="email" id="email">
+                            <span id="emailError" style="color: red;"></span>
+                        </div> <!-- form-group// -->
+                        <div class="mb-3">
+                            <input class="form-control" placeholder="Password" type="password" name="password" id="password">
+                            <span id="passwordError" style="color: red;"></span>
+                        </div> <!-- form-group// -->
+                        
+                        <div class="mb-4">
+                            <button type="submit" class="btn btn-primary w-100"> Signin </button>
+                        </div> <!-- form-group// -->
+                    </form>
+                    
+                </div>
+            </div>
+        </section>
+        <script>
+            function adminloginValidation() {
+          // Input fields
+          const email = document.getElementById('email');
+          const password = document.getElementById('password');
+        
+          // Error fields
+          const emailError = document.getElementById('emailError');
+          const passwordError = document.getElementById('passwordError');
+        
+          // Regex
+          const emailRegex = /^[a-z0-9._%+-]+@gmail+\.[a-z]{3}$/;
+          const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,16}$/;
+        
+          let isValid = true; // A flag to track overall validation
+        
+          // Function to clear error message with a delay
+          function clearErrorWithDelay(errorField) {
+             setTimeout(() => {
+                errorField.innerHTML = '';
+             }, 5000); // 5000 milliseconds = 5 seconds
+          }
+        
+          // Function to validate email
+          function validateEmail() {
+             if (email.value.trim() === '') {
+                emailError.innerHTML = 'Email cannot be empty';
+                clearErrorWithDelay(emailError);
+                isValid = false;
+             } else if (!emailRegex.test(email.value)) {
+                emailError.innerHTML = 'Please enter a valid email';
+                clearErrorWithDelay(emailError);
+                isValid = false;
+             } else {
+                emailError.innerHTML = ''; // Clear error message
+             }
+          }
+        
+          // Function to validate password
+          function validatePassword() {
+             if (password.value.trim() === '') {
+                passwordError.innerHTML = 'Password cannot be empty';
+                clearErrorWithDelay(passwordError);
+                isValid = false;
+            
+             } else {
+                passwordError.innerHTML = ''; // Clear error message
+             }
+          }
+        
+          // Validate fields one by one
+          validateEmail();
+          if (isValid) validateEmail();
+          if (isValid) validatePassword();
+          return isValid;
+        }
+        </script>
+        <footer class="main-footer text-center">
+            <p class="font-xs">
+                <script>
+                document.write(new Date().getFullYear())
+                </script> ©, Willing Wearings - HTML Ecommerce Template .
+            </p>
+            <p class="font-xs mb-30">All rights reserved</p>
+        </footer>
+    </main>
+    <script src="/admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/admin-assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <!-- Main Script -->
+    <script src="/admin-assets/js/main.js" type="text/javascript"></script>
+</body>
+
+
+<!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-account-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:33 GMT -->
+</html>

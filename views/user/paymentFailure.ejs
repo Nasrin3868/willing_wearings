@@ -1,0 +1,26 @@
+<%-include("../partials/userheader")-%>
+
+<div class="container ">
+    <div class="row justify-content-center align-items-center pt-100 pb-100">
+        <div class="col-lg-5">
+                <div class="padding_eight_all bg-white">
+                        <% if (errmessage) { %>
+                            <div class="alert alert-danger text-center" role="alert">
+                                <%= errmessage %>
+                            </div>
+                        <% } else if (message) { %>
+                            <div class="alert alert-success text-center" role="alert">
+                                <%= message %>
+                            </div>
+                        <% } %>
+                </div>
+                <div class="text-center mt-50 ">
+                    <a href="/checkout" class="btn btn-fill-out btn-block hover-up">Retry payment</a>
+                </div>
+        </div> 
+    </div>
+</div>
+
+
+
+<%-include("../partials/userfooter")-%>

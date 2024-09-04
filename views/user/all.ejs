@@ -1,0 +1,230 @@
+<%- include("../partials/userheader") -%>
+
+<section class="product-tabs pt-25 pb-20 wow fadeIn animated">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="widget-category mb-30">
+                    <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
+                    <ul class="categories">
+                        <% categories.forEach(function(category) { %>
+                            <li><a href="/showbycategory/<%= category.name %>"><%= category.name %></a></li>
+                        <% }); %>
+                    </ul>
+                </div>
+                <div class="widget-category mb-30">
+                    <h5 class="section-title style-1 mb-30 wow fadeIn animated">Price Range</h5>
+                    <ul class="categories">
+                        <% if (value=='all') { %>
+                            <% if (!user) { %>
+                                <li><a href="/all?range=high">High to low</a></li>
+                                <li><a href="/all?range=low">Low to high</a></li>
+                            <% }else{%>
+                                <li><a href="/all?range=high">High to low</a></li>
+                                <li><a href="/all?range=low">Low to high</a></li>
+                            <% } %>
+                        <% }else{%>
+                            <% if (!user) { %>
+                                <li><a href="/showbycategory/<%= categoryname %>?range=high">High to low</a></li>
+                                <li><a href="/showbycategory/<%= categoryname %>?range=low">Low to high</a></li>
+                            <% }else{%>
+                                <li><a href="/showbycategory/<%= categoryname %>?range=high">High to low</a></li>
+                                <li><a href="/showbycategory/<%= categoryname %>?range=low">Low to high</a></li>
+                            <% } %>
+                        <% } %>
+                    </ul>
+                </div>
+                <div class="banner-img wow fadeIn mb-45mb-lg-0 animated d-lg-block d-none ">
+                    <img src="assets/imgs/banner/banner-11.jpg" alt="">
+                    <div class="banner-text">
+                        <span>Women Zone</span>
+                        <h4>Save upto <br>10% on <br>Each Category</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <!-- End nav-tabs -->   
+                <div class="tab-content wow fadeIn animated" id="myTabContent">
+                        <% if (products && products.length > 0) { %>
+                            <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
+                        <div class="row product-grid-4">
+
+                            <% let count = 0; %>
+                            <% products.forEach(function(product) { %>
+                                <div class="col-lg-4 col-md-4 col-12 col-sm-6">
+                                    <div class="product-cart-wrap mb-30">
+                                        <div class="product-img-action-wrap">
+                                            <div class="product-img product-img-zoom">
+                                                <a href="/productview/<%= product._id %>">
+                                                    <img class="default-img" src="<%= product.images[0] %>" alt="">
+                                                </a>
+                                            </div>
+                                            <div class="product-action-1">
+                                                <% if (!user) { %>
+                                                    <a aria-label="Add To Wishlist" class="action-btn hover-up" href="/wishlist"><i class="fi-rs-heart"></i></a>
+                                                <% }else{%>
+                                                        <% if (user.wishlist&& user.wishlist.includes(product._id)) { %>
+                                                            <a aria-label="Remove from Wishlist" class="action-btn hover-up" onclick="itemsToWishlist('<%= product._id%>')" id="wishlist-link-<%= product._id%>" ><i class="fi-rs-heart"></i></a>
+                                                        <% }else{%>
+                                                            <a aria-label="Add To Wishlist" class="action-btn hover-up" onclick="itemsToWishlist('<%= product._id%>')" id="wishlist-link-<%= product._id%>"><i class="fi-rs-heart"></i></a>
+                                                        <%} %>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                        <div class="product-content-wrap">
+                                            <div class="product-category">
+                                                <a href="#"><%= product.type %></a>
+                                            </div>
+                                            <h2><a href="#"><%= product.name %></a></h2>
+                                            <div class="rating-result" title="90%">
+                                                <span>
+                                                    <span><%= product.discount %>% Off</span>
+                                                </span>
+                                            </div>
+                                            <div class="product-price">
+                                                <span><%= product.sellingprice %> </span>
+                                                <span class="old-price"><%= product.price %></span>
+                                            </div>
+                                            <div class="product-action-1 show">
+                                                <% if (!user) { %>
+                                                    <a aria-label="Add To Cart" class="action-btn hover-up" href="/cart"><i class="fi-rs-shopping-bag-add"></i></a>
+                                                <% }else{%>
+                                                    <% if (product.stock==0) { %>
+                                                        <p style="color: red;">Out of Stock</p>
+                                                    <% }else{%>
+                                                        <a aria-label="Add To Cart" class="action-btn hover-up" onclick="itemsToCart('<%= product._id%>')"><i class="fi-rs-shopping-bag-add"></i></a>
+                                                    <% } %>
+                                                <% } %>
+                                            </div>
+                                            <% if(user!=''){%>
+                                                <div>
+                                                    <% user.cart.forEach(cartProduct => { %>
+                                                        <% if (cartProduct.product._id.toString() === product._id.toString()) { %>
+                                                            <small>Added to cart</small>
+                                                        <% } %>
+                                                    <% }); %>
+                                                </div>
+                                            <%} %>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% if (++count % 3 === 0) { %>
+                                    </div>
+                                    <% if (count < products.length) { %>
+                                        <div class="row product-grid-4">
+                                    <% } %>
+                                <% } %>
+                            <% }) %>
+                        </div>
+                    </div>
+                    <% } else { %>
+                        <div class="container ">
+                            <div class="row justify-content-center align-items-center pt-50 pb-50">
+                                <div class="col-lg-5">
+                                    <div class="padding_eight_all bg-white">
+                                        <div class="alert text-center" role="alert">
+                                            <h4 class="pt-15" style="color: rgb(183, 18, 18);">Everything sold out...!</h4>
+                                            <h4 class="pt-25" style="color: rgb(18, 122, 89);">We will fill it up soon</h4>
+                                            <h4 class="pt-15" style="color: rgb(18, 122, 89);">Come back later :)</h4>
+                                        </div>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>
+                    <% } %>
+                    <!-- End tab one (Featured) -->
+                </div>
+                <!-- End tab-content -->
+
+                <!-- Pagination -->
+                <div class="pagination-container text-center">
+                    <ul class="pagination">
+                        <% const totalPages = Math.ceil(products.length / 9); %>
+                        <!-- Page links -->
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="#" data-page="<%= i %>"><%= i %></a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include("../partials/userfooter") -%>
+
+<script>
+    $(document).ready(function() {
+        const products = $('.product-cart-wrap');
+        const itemsPerPage = 9;
+        let currentPage = 1;
+        const totalPages = Math.ceil(products.length / itemsPerPage);
+
+        // Show the first page, hide the rest
+        showPage(currentPage);
+
+        // Handle pagination clicks
+        $('.page-link').on('click', function(e) {
+            e.preventDefault();
+            const targetPage = parseInt($(this).data('page'));
+            if (targetPage === currentPage) return; // Clicked on the current page
+
+            // Show the clicked page
+            showPage(targetPage);
+        });
+        function showPage(page) {
+            // Calculate the range of products to display for the given page
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, products.length);
+
+            // Show/hide products based on the page
+            products.hide();
+            products.slice(startIndex, endIndex).show();
+
+            // Update the current page
+            currentPage = page;
+        }
+    });
+
+    function itemsToCart(productId){Swal.fire({
+            icon: 'success',
+            title: 'Added..',
+            text: 'Item added into cart.',
+        });
+            fetch(`/quantityIncrease/${productId}`, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        async function itemsToWishlist(productId){
+            const response=await fetch(`/updateWishlist/${productId}`,{
+                method:'POST',
+            })
+            const result =await response.json();
+            if(result.status){
+                const wishlistBtn = $(`#wishlist-link-${productId}`);
+                wishlistBtn.find('i').toggleClass('in-wishlist');
+                
+                if (wishlistBtn.attr('aria-label') === 'Add To Wishlist') {
+                    wishlistBtn.attr('aria-label', 'Remove from Wishlist');
+                    wishlistBtn.css('background-color', '#088178');
+
+                } else {
+                    wishlistBtn.attr('aria-label', 'Add To Wishlist');
+                    wishlistBtn.css('background-color', '');
+
+                }
+            }
+        }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>

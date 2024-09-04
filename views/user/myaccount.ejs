@@ -1,0 +1,270 @@
+
+<script>
+    function calculateTotalQuantity(items) {
+        let totalQuantity = 0;
+        items.forEach(item => {
+            totalQuantity += item.quantity;
+        });
+        return totalQuantity;
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+$(document).ready(function () {
+    new DataTable('#example');
+            
+})
+</script>
+
+
+
+<%-include("../partials/userheader")-%>
+
+<section class="pt-150 pb-150">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 m-auto">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="dashboard-menu">
+                            <ul class="nav flex-column" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" aria-controls="dashboard" aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="wallet-tab" data-bs-toggle="tab" href="#wallet" role="tab" aria-controls="wallet" aria-selected="false"><i class="fi-rs-shopping-bag mr-10 "></i>Wallet</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false"><i class="fi-rs-shopping-cart-check mr-10"></i>Orders</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="true"><i class="fi-rs-marker mr-10"></i>My Address</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="true"><i class="fi-rs-user mr-10"></i>Edit Profile</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/logout"><i class="fi-rs-sign-out mr-10"></i>Logout</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="tab-content dashboard-content">
+                            <div class="tab-pane fade active show" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <p class="mb-0" style="color: black;">Hello <%= user.username %> </p>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>Profile details:</p>
+                                        <p style="padding-left: 30px;">Name: <%= user.username %></p> 
+                                        <p style="padding-left: 30px;">Email: <%= user.email %></p> 
+                                        <p style="padding-left: 30px;">Phone no: <%= user.mobile %> </p>
+                                    </div>
+                                    <div class="pb-20 pl-20">
+                                        <p>Your referral code: <span style="color: brown;" class="mb-0"><%= user.referral_code %> </span></p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <p>From your account dashboard. you can easily check &amp; view your <a href="#">recent orders</a>, manage your <a href="#">shipping and billing addresses</a> and <a href="#">edit your password and account details.</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Your Orders</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table" id="example">
+                                                <thead>
+                                                    <tr class="text-center">
+                                                        <th style="width: 20%;">Order Id</th>
+                                                        <th style="width: 15%;">Date</th>
+                                                        <th style="width: 15%;">Status</th>
+                                                        <th style="width: 20%;">Total</th>
+                                                        <th style="width: 15%;">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% order.forEach(Order => { %>
+                                                        <tr>
+                                                            <td style="width: 20%;"><%= Order._id %></td>
+                                                            <td style="width: 15%;">
+                                                                <script>
+                                                                    var dateString = '<%= Order.created_on %>'; 
+                                                                    var date = new Date(dateString);
+                                                                    var formattedDate = date.toLocaleDateString(); 
+                                                                    document.write(formattedDate);
+                                                                </script>
+                                                            </td>
+                                                            <td style="width: 15%;">
+                                                                <% if (Order.order_status == 'cancelled'||Order.order_status == 'returned') { %>
+                                                                    <span class="badge rounded-pill alert-warning"><%= Order.order_status %></span>
+                                                                <% }else if (Order.order_status != 'delivered') { %>
+                                                                    <span class="badge rounded-pill alert-info "><%= Order.order_status %></span>
+                                                                <% } else { %>
+                                                                    <span class="badge rounded-pill alert-success text-success"><%= Order.order_status %></span>
+                                                                <% } %>
+                                                            </td>
+                                                            <!-- Update the line to display quantity for each order -->
+                                                            <td style="width: 20%;"><%= Order.finalAmount%> for <%= Order.quantity %> item</td>
+                                                            <td style="width: 15%;"><a href="/orderDetails/<%= Order._id %>" class="btn-small d-block">View Details</a></td>
+                                                        </tr>
+                                                    <%}) %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade text-center" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="card mt-15">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Wallet</h5>
+                                            </div>
+                                            <div class="form-group ml-3 pl-10 pt-20">
+                                                Total wallet balance:
+                                                <div class="pt-20">
+                                                    <h5 class="mb-0"> Rs.<%= user.wallet %></h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
+                                <div class="text-center" style="margin-bottom: 30px;">
+                                    <a class="btn btn-primary" href="/addAddress?org=account">+ Add New Address</a>
+                                </div>
+                                <div class="row">
+                                    <% Address.forEach((userAddress, index) => { %>
+                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <div class="card mt-15">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Shipping Address</h5>
+                                            </div>
+                                            <div class="form-group ml-3 pl-10 pt-20">
+                                                <label for="shippingAddress_<%= userAddress._id %>">
+                                                    Name: <%= userAddress.name %><br>
+                                                    Address: <%= userAddress.address %><br>
+                                                    State: <%= userAddress.state %><br>
+                                                    District: <%= userAddress.district %><br>
+                                                    Pincode: <%= userAddress.pincode %><br>
+                                                    Mobile: <%= userAddress.mobile %><br>
+                                                </label>
+                                                <div class="mt-30">
+                                                    <a class="btn btn-fill-out btn-block hover-up" href="/editAddress/<%= userAddress._id %>?org=account">Edit</a>
+                                                    <a class="btn btn-fill-out btn-block hover-up" style="background-color: rgb(187, 77, 77);" href="/deleteAddress/<%= userAddress._id %>">Delete</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% if (index % 2 === 1) { %>
+                                    </div><div class="row">
+                                    <% } %>
+                                    <% }); %>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="account-detail" role="tabpanel" aria-labelledby="account-detail-tab">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Account Details</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form method="post" onsubmit="return validateform();" name="enq" action="/profileEdit" >
+                                            <div class="row">
+                                                <div class="form-group col-md-12">
+                                                    <label>Name <span class="required">*</span></label>
+                                                    <input required="" class="form-control square" name="name" type="text" value="<%= user.username%>" id="username">
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <label>Mobile No. <span class="required">*</span></label>
+                                                    <input required="" class="form-control square" name="mobile" type="text" value="<%= user.mobile%>" id="username">
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <button type="submit" class="btn btn-fill-out submit" name="submit" value="Submit" >Save</button><a href="/changePassword" class="btn btn-fill-out ml-100" >To change Password</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%-include("../partials/userfooter")-%>
+
+<script>
+    function validateform() {
+        document.getElementById('username-error').innerHTML = '';
+        document.getElementById('mobileno-error').innerHTML = '';
+        document.getElementById('password-error').innerHTML = '';
+        document.getElementById('confirmpassword-error').innerHTML = '';
+
+        var username = document.getElementById('username').value;
+        var mobileno = document.getElementById('mobileno').value;
+        var password = document.getElementById('password').value;
+        var confirmpassword = document.getElementById('confirmpassword').value;
+
+        var usernameRegex= /^[A-Z][A-Za-z ]*$/
+
+        if (username === '' || username.trim() === '') {
+            document.getElementById('username-error').innerHTML = 'Username is required.';
+            setTimeout(function() {
+                document.getElementById('username-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!username.match(usernameRegex)) {
+            document.getElementById('username-error').innerHTML = 'Enter a valid username.';
+            setTimeout(function() {
+                document.getElementById('username-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        
+
+        var phoneRegex = /^[0-9]{10}$/;
+        if (!mobileno.match(phoneRegex)) {
+            document.getElementById('mobileno-error').innerText = 'Enter a valid 10-digit mobile number.';
+            setTimeout(function() {
+                document.getElementById('mobileno-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,16}$/;
+        
+        if (!password.match(passwordRegex)) {
+            document.getElementById('password-error').innerText = 'Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one digit.';
+            setTimeout(function() {
+                document.getElementById('password-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if (confirmpassword !== password) {
+            document.getElementById('confirmpassword-error').innerText = 'Passwords do not match.';
+            setTimeout(function() {
+                document.getElementById('confirmpassword-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+
+        return true;
+    }
+</script>

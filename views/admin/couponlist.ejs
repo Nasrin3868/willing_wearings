@@ -1,0 +1,503 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+$(document).ready(function () {
+    new DataTable('#example');
+            
+})
+</script>
+
+<%-include("../partials/adminheader")-%>
+
+
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Coupons </h2>
+                <p>Create, edit or delete a Coupon</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <form onsubmit="return couponNameValidation()"  method="post" action="/admin/addcoupon" id="createCouponForm">
+                            <% if (errmessage) { %>
+                                <div class="alert alert-danger text-center" role="alert">
+                                    <%= errmessage %>
+                                </div>
+                            <% }%>
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Coupon code</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="code" name="coupon_code"/>
+                                <span id="codeError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Description</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="description" name="coupon_description"/>
+                                <span id="descriptionError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Offer percentage(only the number)</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="percentage" name="coupon_percentage"/>
+                                <span id="percentageError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Minimum Order</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="minorder" name="min_order"/>
+                                <span id="minorderError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Maximum Discount</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="maxdiscount" name="max_discount"/>
+                                <span id="discountError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Valid from:</label>
+                                <input type="date" placeholder="Type here" class="form-control" id="from" name="valid_from"/>
+                                <span id="fromError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Valid To:</label>
+                                <input type="date" placeholder="Type here" class="form-control" id="to" name="valid_to"/>
+                                <span id="toError" style="color: red;"></span><br>
+                            </div>                            
+                            <div class="d-grid">
+                                <button class="btn btn-primary" type="submit">Create coupon</button>
+                            </div>
+                        </form>
+                        <form onsubmit="return editcouponValidation()" method="post" action="/admin/updateCoupon" style="display: none;" id="editCouponForm">
+                            <% if (errmessage) { %>
+                                <div class="alert alert-danger text-center" role="alert">
+                                    <%= errmessage %>
+                                </div>
+                            <% }%>
+                            <input type="hidden" id="editCouponId" name="editCouponId">
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Coupon code</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="editcode" name="editcoupon_code"/>
+                                <span id="editcodeError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Description</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="editdescription" name="editcoupon_description"/>
+                                <span id="editdescriptionError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Offer percentage(only the number)</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="editpercentage" name="editcoupon_percentage"/>
+                                <span id="editpercentageError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Minimum Order</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="editminorder" name="editmin_order"/>
+                                <span id="editminorderError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Maximum Discount</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="editmaxdiscount" name="editmax_discount"/>
+                                <span id="editdiscountError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Valid from:</label>
+                                <input type="date" placeholder="Type here" class="form-control" id="editfrom" name="editvalid_from"/>
+                                <span id="editfromError" style="color: red;"></span><br>
+
+                                <label for="product_name" class="form-label">Valid To:</label>
+                                <input type="date" placeholder="Type here" class="form-control" id="editto" name="editvalid_to"/>
+                                <span id="edittoError" style="color: red;"></span><br>
+                            </div>                            
+                            <div class="d-grid">
+                                <button class="btn btn-primary" type="submit">Edit coupon</button>
+                            </div>
+                        </form>
+                        
+                    </div>
+                    <div class="col-md-9">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="example">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" width="13%">coupon code</th>
+                                        <th class="text-center" width="13%">Name</th>
+                                        <th class="text-center" width="10%">offer(%)</th>
+                                        <th class="text-center" width="10%">min_order</th>
+                                        <th class="text-center" width="10%">max_discount</th>
+                                        <th class="text-center" width="10%">From</th>
+                                        <th class="text-center" width="10%">To</th>
+                                        <th class="text-center" width="15%">Edit</th>
+                                        <th class="text-center" width="15%">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% Coupon.forEach(function(coupon){ %>
+                                    <tr>
+                                        <td class="text-center" width="13%"><b><%= coupon.coupon_code %></b></td>
+                                        <td class="text-center" width="13%"><b><%= coupon.coupon_description%></b></td>
+                                        <td class="text-center" width="10%"><b><%= coupon.discount_percentage %> %</b></td>
+                                        <td class="text-center" width="10%"><b><%= coupon.min_order %></b></td>
+                                        <td class="text-center" width="10%"><b><%= coupon.max_discount %></b></td>
+                                        <td class="text-center" width="10%">
+                                            <b>
+                                            <script>
+                                                var dateString = '<%= coupon.valid_from %>'; 
+                                                var date = new Date(dateString);
+                                                var formattedDate = date.toLocaleDateString(); 
+                                                document.write(formattedDate);
+                                            </script>
+                                            </b>
+                                        </td>
+                                        <td class="text-center" width="10%">
+                                            <b>
+                                            <script>
+                                                var dateString = '<%= coupon.valid_to %>'; 
+                                                var date = new Date(dateString);
+                                                var formattedDate = date.toLocaleDateString(); 
+                                                document.write(formattedDate);
+                                            </script>
+                                            </b>
+                                        </td>
+                                        <td class="text-center" width="15%">
+                                            <button onclick="showEditCouponForm(  '<%= coupon._id %>','<%= coupon.coupon_code %>','<%= coupon.discount_percentage %>','<%= coupon.min_order %>','<%= coupon.max_discount %>','<%= coupon.valid_from %>','<%= coupon.valid_to %>','<%= coupon.coupon_description %>') " class="btn btn-primary btn-sm rounded" >Edit</button>
+                                        </td>
+                                        <td>
+                                            <div width="15%" class="info pl-3 text-center">
+                                                <% if (coupon.blocked==true) { %>
+                                                    <a class="btn  btn-sm rounded" style="background-color: red;color: white;" href="/admin/couponblock/<%= coupon._id %>">Block</a>
+                                                <% } else { %>
+                                                    <a class="btn  btn-sm rounded" style="background-color: green; color: white;" href="/admin/couponblock/<%= coupon._id %>">Unblock</a>                                       
+                                                <% } %>                                      
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- .col// -->
+                </div> <!-- .row // -->
+            </div> <!-- card body .// -->
+        </div> <!-- card .// -->
+    </section> <!-- content-main end// -->
+
+    <script>
+
+function formatDate(dateString) {
+    var date = new Date(dateString);
+    var day = date.getDate();
+    var month = date.getMonth() + 1; // Months are 0-indexed
+    var year = date.getFullYear();
+
+    // Add leading zeros if day or month is less than 10
+    var formattedDate = year +'-'+ (month < 10?'0':'') + month +'-'+ (day<10?'0':'') + day  ;
+    return formattedDate;
+}
+
+    function showEditCouponForm(couponId,couponCode,percentage,minOrder,maxDiscount,validFrom,validTo,Description,){
+        document.getElementById('createCouponForm').style.display = 'none';
+        document.getElementById('editCouponForm').style.display = 'block';
+        
+        var validFromFormatted = formatDate(validFrom);
+        var validToFormatted = formatDate(validTo);
+        
+        console.log("Valid From:", validFromFormatted);
+        console.log("Valid To:", validToFormatted);
+        
+        document.getElementById('editCouponId').value = couponId;
+        document.getElementById('editcode').value = couponCode;
+        document.getElementById('editdescription').value = Description;
+        document.getElementById('editpercentage').value = percentage;
+        document.getElementById('editminorder').value = minOrder;
+        document.getElementById('editmaxdiscount').value = maxDiscount;
+        document.getElementById('editfrom').value = validFromFormatted;
+        document.getElementById('editto').value = validToFormatted;
+
+    }
+
+    function couponNameValidation(){
+        
+        var code = document.getElementById('code').value;
+        var description = document.getElementById('description').value;
+        var percentage = document.getElementById('percentage').value;
+        var minorder = document.getElementById('minorder').value;
+        var maxdiscount = document.getElementById('maxdiscount').value;
+        var from = document.getElementById('from').value;
+        var to = document.getElementById('to').value;
+
+        document.getElementById('codeError').innerHTML = '';
+        document.getElementById('descriptionError').innerHTML = '';
+        document.getElementById('percentageError').innerHTML = '';
+        document.getElementById('minorderError').innerHTML = '';
+        document.getElementById('discountError').innerHTML = '';
+        document.getElementById('fromError').innerHTML = '';
+        document.getElementById('toError').innerHTML = '';
+
+
+        const numRegex= /^[0-9]+$/
+        const descriptionRegex = /^.{1,100}$/;
+        const codeRegex= /^[A-Za-z0-9]*$/
+        
+
+        if(code ==''||code.trim()==''){
+            document.getElementById('codeError').innerHTML = 'coupon code is required.';
+            setTimeout(function() {
+                document.getElementById('codeError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if(!code.match(codeRegex)){
+            document.getElementById('codeError').innerHTML = 'Enter a valid code with max. 10 count.';
+            setTimeout(function() {
+                document.getElementById('codeError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(description ==''||description.trim()==''){
+            document.getElementById('descriptionError').innerHTML = 'coupon description is required.';
+            setTimeout(function() {
+                document.getElementById('descriptionError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(!description.match(descriptionRegex)){
+            document.getElementById('descriptionError').innerHTML = 'Enter a valid description (max. 100 letters).';
+            setTimeout(function() {
+                document.getElementById('descriptionError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(percentage ==''||percentage.trim()==''){
+            document.getElementById('percentageError').innerHTML = 'coupon percentage is required.';
+            setTimeout(function() {
+                document.getElementById('percentageError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(!percentage.match(numRegex)){
+            document.getElementById('percentageError').innerHTML = 'Write only the percentage count (dont use % symbol)';
+            setTimeout(function() {
+                document.getElementById('percentageError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(percentage>75|| percentage<=0){
+            document.getElementById('percentageError').innerHTML = 'It should be less than 75% and greater than 0%';
+            setTimeout(function() {
+                document.getElementById('percentageError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+
+        if(minorder ==''||minorder.trim()==''){
+            document.getElementById('minorderError').innerHTML = 'coupon minorder is required.';
+            setTimeout(function() {
+                document.getElementById('minorderError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(!minorder.match(numRegex)){
+            document.getElementById('minorderError').innerHTML = 'It should be a number.';
+            setTimeout(function() {
+                document.getElementById('minorderError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(minorder == 0){
+            document.getElementById('minorderError').innerHTML = 'It should be a greater than zero.';
+            setTimeout(function() {
+                document.getElementById('minorderError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(maxdiscount ==''||maxdiscount.trim()==''){
+            document.getElementById('discountError').innerHTML = 'coupon discount is required.';
+            setTimeout(function() {
+                document.getElementById('discountError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(!maxdiscount.match(numRegex)){
+            document.getElementById('maxdiscountError').innerHTML = 'It should be a number.';
+            setTimeout(function() {
+                document.getElementById('maxdiscountError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(from.trim() == ''|| from ==''){
+            document.getElementById('fromError').innerHTML = 'Date is required.';
+            setTimeout(function() {
+                document.getElementById('fromError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if(to.trim() ==''||to==''){
+            document.getElementById('toError').innerHTML = 'Date is required.';
+            setTimeout(function() {
+                document.getElementById('toError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        from=new Date(from);
+        to=new Date(to);
+        if(from>to){
+            document.getElementById('toError').innerHTML = `This date should be greater than 'from' date.`;
+            setTimeout(function() {
+                document.getElementById('toError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        return true
+    }
+
+    
+    function editcouponValidation() {
+        
+        const code = document.getElementById('editcode').value;
+        const description = document.getElementById('editdescription').value;
+        const percentage = document.getElementById('editpercentage').value;
+        const minorder = document.getElementById('editminorder').value;
+        const maxdiscount = document.getElementById('editmaxdiscount').value;
+        const from = document.getElementById('editfrom').value;
+        const to = document.getElementById('editto').value;
+
+        document.getElementById('editcodeError').innerHTML = '';
+        document.getElementById('editdescriptionError').innerHTML = '';
+        document.getElementById('editpercentageError').innerHTML = '';
+        document.getElementById('editminorderError').innerHTML = '';
+        document.getElementById('editdiscountError').innerHTML = '';
+        document.getElementById('editfromError').innerHTML = '';
+        document.getElementById('edittoError').innerHTML = '';
+
+
+        const numRegex= /^[0-9]+$/
+        const descriptionRegex = /^.{1,100}$/;
+        const codeRegex= /^[A-Za-z0-9]*$/
+        
+
+        if(code ==''||code.trim()==''){
+            document.getElementById('editcodeError').innerHTML = 'coupon code is required.';
+            setTimeout(function() {
+                document.getElementById('editcodeError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if(!code.match(codeRegex)){
+            document.getElementById('editcodeError').innerHTML = 'Enter a valid code with max. 10 count.';
+            setTimeout(function() {
+                document.getElementById('editcodeError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(description ==''||description.trim()==''){
+            document.getElementById('editdescriptionError').innerHTML = 'coupon description is required.';
+            setTimeout(function() {
+                document.getElementById('editdescriptionError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(!description.match(descriptionRegex)){
+            document.getElementById('editdescriptionError').innerHTML = 'Enter a valid description (max. 100 letters).';
+            setTimeout(function() {
+                document.getElementById('editdescriptionError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(percentage ==''||percentage.trim()==''){
+            document.getElementById('editpercentageError').innerHTML = 'coupon percentage is required.';
+            setTimeout(function() {
+                document.getElementById('editpercentageError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(!percentage.match(numRegex)){
+            document.getElementById('editpercentageError').innerHTML = 'Write only the percentage count (dont use % symbol)';
+            setTimeout(function() {
+                document.getElementById('editpercentageError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(percentage>75|| percentage<=0){
+            document.getElementById('editpercentageError').innerHTML = 'It should be less than 75% and greater than 0%';
+            setTimeout(function() {
+                document.getElementById('editpercentageError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+
+        if(minorder ==''||minorder.trim()==''){
+            document.getElementById('editminorderError').innerHTML = 'coupon minorder is required.';
+            setTimeout(function() {
+                document.getElementById('editminorderError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(!minorder.match(numRegex)){
+            document.getElementById('editminorderError').innerHTML = 'It should be a number.';
+            setTimeout(function() {
+                document.getElementById('editminorderError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(minorder == 0){
+            document.getElementById('editminorderError').innerHTML = 'It should be a greater than zero.';
+            setTimeout(function() {
+                document.getElementById('editminorderError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(maxdiscount ==''||maxdiscount.trim()==''){
+            document.getElementById('editdiscountError').innerHTML = 'coupon discount is required.';
+            setTimeout(function() {
+                document.getElementById('editdiscountError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(!maxdiscount.match(numRegex)){
+            document.getElementById('editmaxdiscountError').innerHTML = 'It should be a number.';
+            setTimeout(function() {
+                document.getElementById('editmaxdiscountError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if(from.trim() === ''|| from ===''){
+            document.getElementById('editfromError').innerHTML = 'Date is required.';
+            setTimeout(function() {
+                document.getElementById('fromError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if(to.trim() ===''||to===''){
+            document.getElementById('edittoError').innerHTML = 'Date is required.';
+            setTimeout(function() {
+                document.getElementById('edittoError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        from=new Date(from);
+        to=new Date(to);
+        if(from>to){
+            document.getElementById('edittoError').innerHTML = `This date should be greater than 'from' date.`;
+            setTimeout(function() {
+                document.getElementById('edittoError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        return true
+    }
+
+
+    </script>
+
+<%-include("../partials/adminfooter")-%>

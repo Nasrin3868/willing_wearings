@@ -1,0 +1,53 @@
+<%-include("../partials/userheader")-%>
+
+
+<div class="container ">
+    <div class="row justify-content-center align-items-center pt-100 pb-100">
+        <div class="col-lg-6">
+            <form method="post" action="/validateotp">
+                <input type="text" style="border-color: black;" name="enterotp" placeholder="enter your received OTP" id="enterotp">
+                <p id="para"><%=locals.errordata ? errordata:''%></p>
+                <button type="submit" class="btn mt-15" >verify otp</button>
+                <button class="btn mt-15" >Time :<span id="timer">60 </span> seconds</button>
+                   
+            </form>
+            <form method="post" action="/resendOTP">
+                <button type="submit" class="btn mt-15 " id="resend-otp-button" disabled >Resend otp</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<%-include("../partials/userfooter")-%>
+<script>
+
+    let seconds = 60;
+
+    const countdown = () => {
+    const timerElement = document.getElementById('timer');
+
+    const intervalId = setInterval(() => {
+        seconds--;
+        timerElement.innerText = seconds;
+
+        if (seconds === 0) {
+        clearInterval(intervalId);
+        timerElement.innerText = 'Time\'s up!';
+        }
+    }, 1000);
+    };
+
+
+    countdown();
+
+        // Function to enable the "Resend OTP" button after 1 minute
+        function enableResendOTP() {
+            const resendOTPButton = document.getElementById("resend-otp-button");
+            resendOTPButton.removeAttribute("disabled");
+        }
+
+        // Call the enableResendOTP function after 1 minute (60,000 milliseconds)
+        setTimeout(enableResendOTP, 60000);
+
+</script>

@@ -1,0 +1,149 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+$(document).ready(function () {
+    new DataTable('#example');
+            
+})
+</script>
+
+<%-include("../partials/adminheader")-%>
+
+
+<section class="content-main">
+<div class="card mb-4">
+    <header class="card-header" id="header">
+        <h4 class="card-title">Latest orders</h4>
+        <div class="row align-items-center">
+            <div class="col-md-3">
+                <form method="post" onsubmit="return validateform()" action="/admin/UpdateOrderByDateForm" id="OrderByDateForm">
+                    <div class="row align-items-center">
+                        <div class="col-md-10 col-6">
+                            <label for="from" class="form-label">From:</label>
+                            <input type="date" class="form-control" id="from" name="orderFrom">
+                            <span id="fromError" style="color: red;"></span>
+                        </div>
+                        <div class="col-md-10 col-6">
+                            <label for="to" class="form-label">To:</label>
+                            <input type="date" class="form-control" id="to" name="orderTo">
+                            <span id="toError" style="color: red;"></span>
+                        </div>
+                        <div class="col-md-6 col-6" style="padding-top: 4%;">
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-2 col-6">
+                <a href="/admin/dailyOrder" class="btn btn-primary btn-sm rounded">Daily</a>
+            </div>
+            <div class="col-md-2 col-6">
+                <a href="/admin/weeklyOrder" class="btn btn-primary btn-sm rounded">Weekly</a>
+            </div>
+            <div class="col-md-2 col-6">
+                <a href="/admin/yearlyOrder" class="btn btn-primary btn-sm rounded">Yearly</a>
+            </div>
+            <div class="col-md-2 col-6">
+                <a href="/admin/invoice" class="btn btn-primary btn-sm rounded">Invoice</a>
+                <!-- <button href="#" class="btn btn-primary btn-sm rounded" id="invoice">Invoice</button> -->
+            </div>
+        </div>
+    </header>
+    <div class="card-body">
+        <div class="table-responsive">
+            <div class="table-responsive">
+                <table class="table align-middle table-nowrap mb-0" id="example">
+                    <thead class="table-light">
+                        <tr class="text-center">
+                            <th class="align-middle" scope="col">Order ID</th>
+                            <th class="align-middle" scope="col">Billing Name</th>
+                            <th class="align-middle" scope="col">Date</th>
+                            <th class="align-middle" scope="col">Total</th>
+                            <th class="align-middle" scope="col">Payment Status</th>
+                            <th class="align-middle" scope="col">Payment Method</th>
+                            <th class="align-middle" scope="col">View Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% orders.forEach((order)=>{ %> 
+                        <tr class="text-center">
+                            <td><a href="#" class="fw-bold"><%= order._id %></a> </td>
+                            <td><%= order.user_id.username %></td>
+                            <td>
+                                <script>
+                                    var dateString = '<%= order.created_on %>'; 
+                                    var date = new Date(dateString);
+                                    var formattedDate = date.toLocaleDateString(); 
+                                    document.write(formattedDate);
+                                </script>
+                            </td>
+                            <td>
+                                Rs.<%= order.finalAmount %>
+                            </td>
+                            <td>
+                                <span class="badge badge-pill badge-soft-success"><%= order.payment_status %></span>
+                            </td>
+                            <td>
+                                <i class="material-icons md-payment font-xxl text-muted mr-5"></i> <%= order.payment_method %>
+                            </td>
+                            <td>
+                                <a href="/admin/orderDetails/<%= order._id %>" class="btn btn-xs"> View details</a>
+                            </td>
+                        </tr>
+                        <%}) %>
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- table-responsive end// -->
+    </div>
+</div>
+</section>
+
+
+<script>
+
+    document.getElementById("invoice").addEventListener("click",()=>{
+        document.getElementById('header').style.display = 'none';
+        window.print()
+        document.getElementById('header').style.display = 'block';
+    })
+    
+    function validateform(){
+
+        var from = document.getElementById('from').value;
+        var to = document.getElementById('to').value;   
+
+        document.getElementById('fromError').innerHTML = '';
+        document.getElementById('toError').innerHTML = '';
+
+        if(from.trim() == ''|| from ==''){
+            document.getElementById('fromError').innerHTML = 'Date is required.';
+            setTimeout(function() {
+                document.getElementById('fromError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if(to.trim() ==''||to==''){
+            document.getElementById('toError').innerHTML = 'Date is required.';
+            setTimeout(function() {
+                document.getElementById('toError').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        from=new Date(from);
+        to=new Date(to);
+        if(from>to){
+            document.getElementById('toError').innerHTML = `This date should be greater than 'from' date.`;
+            setTimeout(function() {
+                document.getElementById('toError').innerHTML = '';
+            }, 7000);
+            return false;
+        }
+        return true
+    }
+
+
+</script>
+
+<%-include("../partials/adminfooter")-%>

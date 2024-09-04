@@ -1,0 +1,232 @@
+<%-include("../partials/userheader")-%>
+
+
+<main class="main">
+    <section class="mt-50 mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="product-detail accordion-detail">
+                        <div class="row mb-50">
+                            <div class="col-md-6 col-sm-12 col-xs-12">
+                                <div class="detail-gallery">
+                                    <span class="zoom-icon"><i class="fi-rs-search"></i></span>
+                                    <!-- MAIN SLIDES -->
+                                    <div class="product-image-slider">
+                                        <% if (product && product.images && product.images.length > 0) { %>
+                                            <% product.images.forEach(function (image, index) { %>
+                                                <figure class="border-radius-10">
+                                                    <img src="<%= image %>" alt="product image">
+                                                </figure>
+                                            <% }); %>
+                                        <% } %>
+                                    </div>
+                                    <!-- THUMBNAILS -->
+                                    <div class="slider-nav-thumbnails pl-15 pr-15">
+                                        <% if (product && product.images && product.images.length > 0) { %>
+                                            <% product.images.forEach(function (image, index) { %>
+                                                <div><img src="<%= image %>" alt="product image" onclick="showImage('<%= index %>')"></div>
+                                            <% }); %>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12 col-xs-12">
+                                <div class="detail-info">
+                                    <h2 class="title-detail"><%= product.name %></h2>
+                                    <div class="product-detail-rating">
+                                        <div class="pro-details-brand">
+                                            <span> Brands: <a href="#"><%= product.brand %></a></span>
+                                        </div>
+                                        <div class="product-rate-cover text-end">
+                                            <div class="product-rate d-inline-block">
+                                                <div class="product-rating" style="width:90%">
+                                                </div>
+                                            </div>
+                                            <span class="font-small ml-5 text-muted"> (25 reviews)</span>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix product-price-cover">
+                                        <div class="product-price primary-color float-left">
+                                            <ins><span class="text-brand"><%= product.sellingprice %></span></ins>
+                                            <ins><span class="old-price font-md ml-15"><%= product.price %></span></ins>
+                                            <span class="save-price  font-md color3 ml-15"><%= product.discount %>% Off</span>
+                                        </div>
+                                    </div>
+                                    <div class="bt-1 border-color-1 mt-15 mb-15"></div>
+                                    <div class="short-desc mb-30">
+                                        <p><%= product.description %></p>
+                                    </div>
+                                    <div class="product_sort_info font-xs mb-30">
+                                        <ul>
+                                            <li class="mb-10"><i class="fi-rs-crown mr-5"></i> 1 Year AL Jazeera Brand Warranty</li>
+                                            <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy</li>
+                                            <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="attr-detail attr-size">
+                                        <strong class="mr-10">Size</strong>
+                                        <ul class="list-filter size-filter font-small">
+                                            <li class="<%= product.size === 'S' ? 'active' : '' %>"><a href="#">S</a></li>
+                                            <li class="<%= product.size === 'M' ? 'active' : '' %>"><a href="#">M</a></li>
+                                            <li class="<%= product.size === 'L' ? 'active' : '' %>"><a href="#">L</a></li>
+                                            <li class="<%= product.size === 'XL' ? 'active' : '' %>"><a href="#">XL</a></li>
+                                            <li class="<%= product.size === 'XXL' ? 'active' : '' %>"><a href="#">XXL</a></li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                                    <div class="detail-extralink">
+                                        <% if (!user) { %>
+                                            <a href="/cart" class="btn btn-fill-out btn-block hover-up">Add to cart</a>
+                                        <% }else{%>
+                                            <% if (product.stock==0) { %>
+                                                <p style="color: red;">Out of Stock</p>
+                                            <% }else{%>
+                                                <a onclick="itemsToCart('<%= product._id%>')" class="btn btn-fill-out btn-block hover-up">Add to cart</a>
+                                            <% } %>
+                                        <% } %>
+                                        <div class="product-extra-link2">
+
+                                            <div class="product-action-1">
+                                                <% if (!user) { %>
+                                                    <a aria-label="Add To Wishlist" class="action-btn hover-up" href="/wishlist"><i class="fi-rs-heart"></i></a>
+                                                <% }else{%>
+                                                        <% if (user.wishlist&& user.wishlist.includes(product._id)) { %>
+                                                            <a aria-label="Remove from Wishlist" class="action-btn hover-up" style="background-color: #088178;" onclick="itemsToWishlist('<%= product._id%>')" id="wishlist-link-<%= product._id%>" ><i class="fi-rs-heart"></i></a>
+                                                        <% }else{%>
+                                                            <a aria-label="Add To Wishlist" class="action-btn hover-up" onclick="itemsToWishlist('<%= product._id%>')" id="wishlist-link-<%= product._id%>"><i class="fi-rs-heart"></i></a>
+                                                        <%} %>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% if(user!=''){%>
+                                        <div class="pt-20">
+                                            <% user.wishlist.forEach(wishlists => { %>
+                                                <% if (wishlists._id.toString() === product._id.toString()) { %>
+                                                    <small>Added to wishlist</small>
+                                                <% } %>
+                                            <% }); %>
+                                        </div>
+                                        <div class="pt-10">
+                                            <% user.cart.forEach(cartProduct => { %>
+                                                <% if (cartProduct.product._id.toString() === product._id.toString()) { %>
+                                                    <small>Added to cart</small>
+                                                <% } %>
+                                            <% }); %>
+                                        </div>
+                                    <%} %>
+                                    
+                                    <ul class="product-meta font-xs color-grey mt-50">
+                                        <li class="mb-5">SKU: <a href="#">FWM15VKT</a></li>
+                                        <li class="mb-5">Tags: <a href="#" rel="tag">Cloth</a>, <a href="#" rel="tag">Women</a>, <a href="#" rel="tag">Dress</a> </li>
+                                        <li>Availability:
+                                            <span class="<%= product.stock === 0 ? 'out-of-stock text-danger' : 'in-stock text-success' %> ml-5">
+                                                <%= product.stock === 0 ? 'Out of Stock' : product.stock + ' Items In Stock' %>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                    
+                                </div>
+                                <!-- Detail Info -->
+                            </div>
+                        </div>
+                        <div class="tab-style3 ">
+                            <ul class="nav nav-tabs text-uppercase">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="Description-tab" data-bs-toggle="tab" href="#Description">About product</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content shop_info_tab entry-main-content">
+                                <div class="tab-pane fade show active" id="Description">
+                                    <div class="">
+                                        <p>Product: <%= product.name %></p>
+                                        <p>Description: <%= product.description %></p>
+                                        <p>Brand: <%= product.brand %></p>
+                                        <p>Colour: <%= product.colour %></p>
+                                        <p>Type: <%= product.category.type %></p>
+                                        <p>Category: <%= product.category.name %></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 primary-sidebar sticky-sidebar">
+                    <div class="banner-img wow fadeIn mb-45mb-lg-0 animated d-lg-block d-none ">
+                        <img src="assets/imgs/banner/banner-11.jpg" alt="">
+                        <div class="banner-text">
+                            <span>Women Zone</span>
+                            <h4>Save upto <br>10% on <br>Each Category</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+
+<script>
+    // JavaScript function to show the selected image in the main slider
+    function showImage(index) {
+        // Hide all images first
+        const images = document.querySelectorAll('.product-image-slider img');
+        images.forEach(function (img) {
+            img.classList.add('hidden');
+        });
+
+        // Show the selected image
+        images[index].classList.remove('hidden');
+    }
+
+    // Show the first image by default
+    showImage(0);
+</script>
+<%-include("../partials/userfooter")-%>
+
+<script>
+        function itemsToCart(productId){
+            Swal.fire({
+                icon: 'success',
+                title: 'Added..',
+                text: 'Item added into cart.',
+            });
+            fetch(`/quantityIncrease/${productId}`, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        async function itemsToWishlist(productId){
+            const response=await fetch(`/updateWishlist/${productId}`,{
+                method:'POST',
+            })
+            const result =await response.json();
+            if(result.status){
+                const wishlistBtn = $(`#wishlist-link-${productId}`);
+                wishlistBtn.find('i').toggleClass('in-wishlist');
+                
+                if (wishlistBtn.attr('aria-label') === 'Add To Wishlist') {
+                    wishlistBtn.attr('aria-label', 'Remove from Wishlist');
+                    wishlistBtn.css('background-color', '#088178');
+
+                } else {
+                    wishlistBtn.attr('aria-label', 'Add To Wishlist');
+                    wishlistBtn.css('background-color', '');
+
+                }
+            }
+        }
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>

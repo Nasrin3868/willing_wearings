@@ -1,0 +1,411 @@
+<%-include("../partials/userheader")-%>
+
+<style>
+    .radio-group input[type="radio"] {
+        display: none;
+    }
+
+    .radio-group label {
+        position: relative;
+        padding-left: 30px;
+        cursor: pointer;
+    }
+
+    .radio-group label:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 6%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgb(44, 126, 121);
+        border-radius: 50%;
+        background-color: white;
+    }
+
+    .radio-group input[type="radio"]:checked+label:before {
+        background-color: rgb(4, 105, 99);
+    }
+
+    .address-section {
+        margin-bottom: 20px;
+    }
+
+
+    .radio-group .form-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .radio-group .radio-group-input[type="radio"] {
+        margin-right: 100px;
+    }
+
+    /* Add spacing to table cells */
+    .table-responsive {
+        margin-bottom: 20px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+        padding: 8px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* Add borders to table rows and cells */
+    .table th,
+    .table td {
+        border: 1px solid #ddd;
+    }
+
+    /* Style the product image */
+    .product-image img {
+        max-width: 100px;
+        max-height: 100px;
+        width: auto;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
+
+    /* Add spacing between table rows */
+    .cart-item {
+        margin-bottom: 10px;
+    }
+</style>
+
+<section class="mt-50 mb-50">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="text-center" style="margin-bottom: 30px;">
+                    <a class="btn btn-primary" href="/addAddress?org=checkout">+ Add New Address</a>
+                    <div class="row mt-5 mb-5 ">
+                        <% if (errmessage) { %>
+                            <div class="alert alert-danger text-center" role="alert">
+                                <%= errmessage %>
+                            </div>
+                        <% } else if (message) { %>
+                            <div class="alert alert-success text-center" role="alert">
+                                <%= message %>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="widget-taber-content p-30 background-white border-radius-10 mb-md-5 mb-lg-0 mb-sm-5">
+                    <div class="padding_eight_all bg-white">
+                        <div class="heading_s1">
+                            <h4 class="mb-30">Choose Your Address</h4>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="address-section">
+                                    <form id="selectAddressForm" action="/placedOrder" method="post">
+                                    <div class="radio-group">
+                                        <% useraddress.forEach(userAddress => { %>
+                                            <div class="border-radius-10 mb-10" style="border: 1px solid #e2e9e1;padding: 10px;border-radius: 10px;">
+                                            <div class="form-group">
+                                                <input type="radio"
+                                                    name="selectedShippingAddress"
+                                                    value="<%= userAddress._id %>"
+                                                    id="<%= userAddress._id %>"
+                                                    onclick="submitForm('<%= userAddress.name %>','<%= userAddress.address %>','<%= userAddress.state %>','<%= userAddress.district %>','<%= userAddress.city %>','<%= userAddress.pincode %>','<%= userAddress.mobile %>')">
+                                                <label for="<%= userAddress._id %>">
+                                                    <%= userAddress.name %><br>
+                                                    <%= userAddress.address %><br>
+                                                    <%= userAddress.state %>,
+                                                    <%= userAddress.district %>,
+                                                    <%= userAddress.city %>,
+                                                    <%= userAddress.pincode %><br>
+                                                    Mobile: <%=userAddress.mobile%> <br> <br>
+                                                    <a class="mt-30" href="/editAddress/<%= userAddress._id %>?org=checkout">Edit address</a>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <% }); %>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <% if (cartSubtotal==0) { %>
+                    <div class="table-responsive">
+                        <div class="padding_eight_all bg-white">
+                                <div class="alert alert-danger text-center" role="alert">
+                                    <p>Something went wrong...</p>
+                                </div>
+                        </div>
+                        <div class="text-center mt-50 ">
+                            <h5>Go back to home, <a href="/home"><i ></i>Home...</a> </h5>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="order_review">
+                        <div class="mb-20">
+                            <h4>Your Orders</h4>
+                        </div>
+                        <div class="table-responsive order_table text-center">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Product</th>
+                                        <th>Total</th>
+                                        <th colspan="2">category Offer</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% user.cart.forEach(cartItem => { %>
+                                        <tr>
+                                        <td class="image product-thumbnail"><img src="<%= cartItem.product.images[0] %>" alt="#"></td>
+                                        <td>
+                                            <h5><a href="shop-product-full.html"><%= cartItem.product.name %></a></h5> <span class="product-qty">x <%= cartItem.quantity %></span>
+                                        </td>
+                                        <td>Rs.<%= cartItem.product.sellingprice * cartItem.quantity %></td>
+
+                                        <% if (today>cartItem.product.category.valid_to||today < cartItem.product.category.valid_from ) { %>
+                                            <td width="8%">0 %</td>
+                                            <td>Rs.0</td>
+                                        <% } else { %>
+                                        <td width="8%"><%= cartItem.product.category.discount_percentage %> %</td>
+                                        <td>Rs.<%= ((cartItem.product.category.discount_percentage/100)*cartItem.product.sellingprice).toFixed(2) %></td>
+                                        <% } %>
+                                    </tr>
+                                    <% }); %>
+                                    <tr>
+                                        <th>SubTotal</th>
+                                        <td class="product-subtotal" colspan="4">Rs.<%= cartSubtotal %></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Shipping</th>
+                                        <td colspan="4"><em>Free Shipping</em></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Category Discount</th>
+                                        <td class="product-subtotal" colspan="4">Rs.<%= categoryDiscount.toFixed(2) %></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Coupon Discount</th>
+                                        <td class="product-subtotal" colspan="4">Rs.<%= coupondiscount.toFixed(2) %></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <th>Total</th>
+                                        <td colspan="4" class="product-subtotal"><span class="font-xl text-brand fw-900">Rs.<%= (cartSubtotal-coupondiscount-categoryDiscount).toFixed(2) %></span></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                        <div class="payment_method">
+                            <div class="mb-25">
+                                <h5>Payment</h5>
+                            </div>
+                                <div class="custome-radio">
+                                    <input class="form-check-input" required="" type="radio" name="payment_option" id="exampleRadios3" checked=""  value="onlinePayment" >
+                                    <label class="form-check-label" for="exampleRadios3" data-bs-toggle="collapse" data-target="#bankTranfer" aria-controls="bankTranfer">Online Payment</label>
+                                </div>
+                            
+                                <div class="custome-radio">
+                                    <input class="form-check-input" required="" type="radio" name="payment_option" id="exampleRadios5" value="COD" >
+                                    <label class="form-check-label" for="exampleRadios5" id="cashondelivery" data-bs-toggle="collapse" data-target="#cod" aria-controls="cod">Cash On Delivery</label>
+                                </div>
+
+                                <div class="custome-radio">
+                                    <input class="form-check-input" required="" type="radio" name="payment_option" id="exampleRadios4" value="WalletPayment" >
+                                    <label class="form-check-label" for="exampleRadios4" id="walletPayment" data-bs-toggle="collapse" data-target="#walletPayment" aria-controls="walletPayment">Wallet payment</label>
+                                </div>
+                        </div>
+                        <button onclick="submitPlaceOrder('<%= cartSubtotal-coupondiscount %>')" class="btn btn-fill-out btn-block mt-30">Place Order</button>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<%-include("../partials/userfooter")-%>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+
+let address='',name='',state='',district='',city='',pincode='',mobileno=''
+let paymentType
+
+let wallet= '<%= user.wallet%>'
+let total='<%= (cartSubtotal-coupondiscount-categoryDiscount).toFixed(2) %>'
+
+function submitForm(username,useraddress,userstate,userdistrict,usercity,userpincode,usermobileno) {
+    
+    name=username
+    address = useraddress; 
+    state=userstate
+    district=userdistrict
+    city=usercity
+    pincode=userpincode
+    mobileno=usermobileno
+}
+
+function submitPlaceOrder(cartSubtotal) {
+    paymentType = document.querySelector('input[name="payment_option"]:checked').value;
+    const apiUrl = '/OrderSubmit';
+    if (address==='') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Please select an address!',
+        });
+        return;
+    }
+    if(paymentType=='WalletPayment'){
+        const walletAmount = parseFloat(wallet);
+        const totalAmount = parseFloat(total); 
+        if(totalAmount > walletAmount){
+            Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Insufficience balance in you wallet!',
+        });
+        return;
+        }
+    }
+    // Use the correct variable name addressId
+    // const addressIdToSend = addressId;
+
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cartSubtotal,address,name,state,district,city,pincode,mobileno,paymentType}) // Wrap addressId in an object
+    })
+   
+    .then(response => response.json())
+    .then(data => {
+    if(data.status=="COD"){
+            window.location.href = data.redirectUrl;
+    }else if(data.status=="RAZORPAY"){
+        razorpayPayment(data.response);
+    }
+function razorpayPayment(order) {
+
+var options = {
+"key": "rzp_test_badyxeiy422xF7", // Enter the Key ID generated from the Dashboard
+"amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+"currency": "INR",
+"name": "Willing_Wearings", //your business name
+"description": "Test Transaction",
+"order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+"handler": function (response) {
+
+verifyPayment(response, order)
+
+},
+"prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+"name": "Gaurav Kumar", //your customer's name
+"email": "gaurav.kumar@example.com",
+"contact": "9000090000" //Provide the customer's phone number for better conversion rates 
+},
+"notes": {
+"address": "Razorpay Corporate Office"
+},
+"modal": {
+    "ondismiss": function(){
+        closeorder()
+    }
+},
+
+};
+
+
+console.log('options are',options);
+var razorpay = new Razorpay(options);
+razorpay.on('payment.failed', function (response) {
+    alert("Payment failed");
+    console.log("response data for failed paymentis ===> ",response);
+   
+    // Your fetch call to handle payment failure
+    fetch('/paymentFailureHandler', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            errorDescription: response.error.description,
+            errorSource: response.error.source,
+            errorStep: response.error.step,
+            errorReason: response.error.reason,
+            orderId: response.error.metadata.order_id,
+            paymentId: response.error.metadata.payment_id
+        })
+    })
+    .then(response => response.json())
+    .then(data => { 
+       window.location.href=data.redirectUrl
+    })
+    .catch(error => {
+        console.error('Error handling payment failure:', error);
+       
+    });
+});
+
+razorpay.open();
+ }
+
+ async function closeorder(){
+    const response = await fetch('/closepayment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ }),
+            })
+ }
+
+ async function verifyPayment(payment, order) {
+  
+            const response = await fetch('/verify-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ payment, order }),
+            })
+
+            const result = await response.json();
+
+            if (result.status === 'paymentSuccess') {
+                window.location.href=`/placedOrder?orderId=${result.placedOrderId}`
+                
+            } else if (result.status === 'paymentFailed') {
+                window.location.href="/paymentFailure"
+                console.log("payment failed")
+            } else {
+                
+            }
+        }
+
+    })
+    .catch(error => {
+        console.error('Error updating cart item:', error);
+    });
+        }
+        
+
+       
+   
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+

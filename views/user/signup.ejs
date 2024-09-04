@@ -1,0 +1,140 @@
+<%-include("../partials/userheader")-%>
+
+<div class="container ">
+<div class="row justify-content-center align-items-center pt-100 pb-100">
+<div class="col-lg-6">
+    <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
+        <div class="padding_eight_all bg-white">
+            <div class="heading_s1">
+                <h3 class="mb-30">Create an Account </h3>
+            </div>
+            <form onsubmit="return validateform()" method="post" action="/dosignup">
+                <p id="para"><%=locals.errordata ? errordata:''%></p>
+                <div class="form-group">
+                    <input type="text" name="username" placeholder="Username" id="username">
+                    <span id="username-error" style="color: red;"></span>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="email" placeholder="Email" id="email">
+                    <span id="email-error" style="color: red;"></span>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="mobile" placeholder="Mobile Number" id="mobileno">
+                    <span id="mobileno-error" style="color: red;"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">If any:</label>
+                    <input type="text" name="referral" placeholder="refferal code" id="referral">
+                    <span id="referral" style="color: red;"></span>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password" id="password">
+                    <span id="password-error" style="color: red;"></span>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="confirmpassword" placeholder="Confirm password" id="confirmpassword">
+                    <span id="confirmpassword-error" style="color: red;"></span>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-fill-out btn-block hover-up" name="login">Submit &amp; Register</button>
+                </div>
+            </form>
+            <!-- <div id="error-message" style="color: red;"></div> -->
+            <div class="text-muted text-center">Already have an account? <a href="/login">Login now</a></div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+
+
+<%-include("../partials/userfooter")-%>
+<script>
+    function validateform() {
+        document.getElementById('username-error').innerHTML = '';
+        document.getElementById('email-error').innerHTML = '';
+        document.getElementById('mobileno-error').innerHTML = '';
+        document.getElementById('referral-error').innerHTML = '';
+        document.getElementById('password-error').innerHTML = '';
+        document.getElementById('confirmpassword-error').innerHTML = '';
+
+        var username = document.getElementById('username').value;
+        var email = document.getElementById('email').value;
+        var mobileno = document.getElementById('mobileno').value;
+        var referral = document.getElementById('referral').value;
+        var password = document.getElementById('password').value;
+        var confirmpassword = document.getElementById('confirmpassword').value;
+
+        var usernameRegex= /^[A-Z][A-Za-z ]*$/
+
+        if (username === '' || username.trim() === '') {
+            document.getElementById('username-error').innerHTML = 'Username is required.';
+            setTimeout(function() {
+                document.getElementById('username-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!username.match(usernameRegex)) {
+            document.getElementById('username-error').innerHTML = 'Enter a valid username.';
+            setTimeout(function() {
+                document.getElementById('username-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email === '' || email.trim() === '') {
+            document.getElementById('email-error').innerHTML = 'Email field cannot be empty.';
+            setTimeout(function () {
+                document.getElementById('email-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!email.match(emailRegex)) {
+            document.getElementById('email-error').innerText = 'Enter a valid email address.';
+            setTimeout(function() {
+                document.getElementById('email-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        var phoneRegex = /^[0-9]{10}$/;
+        if (!mobileno.match(phoneRegex)) {
+            document.getElementById('mobileno-error').innerText = 'Enter a valid 10-digit mobile number.';
+            setTimeout(function() {
+                document.getElementById('mobileno-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        var referralRegex= /^[A-Za-z0-9]{10}$/
+        if (!referral.match(referralRegex)) {
+            document.getElementById('referral-error').innerText = 'Enter a valid referral code.';
+            setTimeout(function() {
+                document.getElementById('referral-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,16}$/;
+        
+        if (!password.match(passwordRegex)) {
+            document.getElementById('password-error').innerText = 'Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one digit.';
+            setTimeout(function() {
+                document.getElementById('password-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        if (confirmpassword !== password) {
+            document.getElementById('confirmpassword-error').innerText = 'Passwords do not match.';
+            setTimeout(function() {
+                document.getElementById('confirmpassword-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+
+        return true;
+    }
+</script>

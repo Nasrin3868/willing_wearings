@@ -1,0 +1,192 @@
+
+<%-include("../partials/userheader")-%>
+
+<div class="container ">
+    <div class="row justify-content-center align-items-center pt-70 pb-70">
+        <div class="col-lg-6">
+            <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
+                <div class="padding_eight_all bg-white">
+                    <div class="heading_s1">
+                        <h3 class="mb-30">Edit Address</h3>
+                    </div>
+                    <form onsubmit="return validateform();" method="post" action="/editedAddress/<%= editaddress._id %>?org=<%= org%>">
+                        <p id="para"><%= locals.errordata ? errordata : '' %></p>
+                        <div class="form-group">
+                            <input type="text" name="username" placeholder="Name *" id="username" value="<%= editaddress.name %>">
+                            <span id="name-error" style="color: red;"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="address" placeholder="Address *" id="address" value="<%= editaddress.address %>">
+                            <span id="address-error" style="color: red;"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="state" placeholder="State*" id="state" value="<%= editaddress.state %>">
+                            <span id="state-error" style="color: red;"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="district" placeholder="District*" id="district" value="<%= editaddress.district%>">
+                            <span id="district-error" style="color: red;"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="city" placeholder="City / Town *" id="city" value="<%= editaddress.city %>">
+                            <span id="city-error" style="color: red;"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="pincode" placeholder="Pincode*" id="pincode" value="<%= editaddress.pincode %>">
+                            <span id="pincode-error" style="color: red;"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="mobileno" placeholder="Phone *" id="mobileno" value="<%= editaddress.mobile %>">
+                            <span id="mobileno-error" style="color: red;"></span>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-fill-out btn-block hover-up">Submit</button>
+                        </div>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%-include("../partials/userfooter")-%>
+
+<script>
+    function validateform() {
+        document.getElementById('name-error').innerHTML = '';
+        document.getElementById('state-error').innerHTML = '';
+        document.getElementById('district-error').innerHTML = '';
+        document.getElementById('city-error').innerHTML = '';
+        document.getElementById('address-error').innerHTML = '';
+        document.getElementById('pincode-error').innerHTML = '';
+        document.getElementById('mobileno-error').innerHTML = '';
+
+        var name = document.getElementById('username').value;
+        var state = document.getElementById('state').value;
+        var district = document.getElementById('district').value;
+        var city = document.getElementById('city').value;
+        var address = document.getElementById('address').value;
+        var pincode = document.getElementById('pincode').value;
+        var mobileno = document.getElementById('mobileno').value;
+
+        var nameRegex= /^[A-Za-z ]*$/
+
+        if (name === '' || name.trim() === '') {
+            document.getElementById('name-error').innerHTML = 'Username is required.';
+            setTimeout(function() {
+                document.getElementById('name-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!name.match(nameRegex)) {
+            document.getElementById('name-error').innerHTML = 'Enter a valid username.';
+            setTimeout(function() {
+                document.getElementById('name-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        
+        var addressRegex= /^(?=.*[a-z]).{3,40}$/
+
+        if (address === '' || address.trim() === '') {
+            document.getElementById('address-error').innerHTML = 'This field is mandatory.';
+            setTimeout(function() {
+                document.getElementById('address-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!address.match(addressRegex)) {
+            document.getElementById('address-error').innerHTML = 'Enter a valid name.';
+            setTimeout(function() {
+                document.getElementById('address-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        var stateRegex= /^[A-Za-z ]*$/
+
+        if (state === '' || state.trim() === '') {
+            document.getElementById('state-error').innerHTML = 'This field is mandatory.';
+            setTimeout(function() {
+                document.getElementById('state-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!state.match(stateRegex)) {
+            document.getElementById('state-error').innerHTML = 'Enter a valid name.';
+            setTimeout(function() {
+                document.getElementById('state-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        var districtRegex= /^[A-Za-z ]*$/
+
+        if (district === '' || district.trim() === '') {
+            document.getElementById('district-error').innerHTML = 'This field is mandatory.';
+            setTimeout(function() {
+                document.getElementById('district-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!district.match(districtRegex)) {
+            document.getElementById('district-error').innerHTML = 'Enter a valid name.';
+            setTimeout(function() {
+                document.getElementById('district-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        var cityRegex= /^[A-Za-z ]*$/
+
+        if (city === '' || city.trim() === '') {
+            document.getElementById('city-error').innerHTML = 'This field is mandatory.';
+            setTimeout(function() {
+                document.getElementById('city-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!city.match(cityRegex)) {
+            document.getElementById('city-error').innerHTML = 'Enter a valid name.';
+            setTimeout(function() {
+                document.getElementById('city-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        var pincodeRegex= /^[0-9]{6}$/;
+        if (pincode === '' || pincode.trim() === '') {
+            document.getElementById('pincode-error').innerHTML = 'pincode is required.';
+            setTimeout(function() {
+                document.getElementById('pincode-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!pincode.match(pincodeRegex)) {
+            document.getElementById('pincode-error').innerText = 'Enter a valid pincode.';
+            setTimeout(function() {
+                document.getElementById('pincode-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        var phoneRegex = /^[0-9]{10}$/;
+        if (pincode === '' || pincode.trim() === '') {
+            document.getElementById('pincode-error').innerHTML = 'pincode is required.';
+            setTimeout(function() {
+                document.getElementById('pincode-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!mobileno.match(phoneRegex)) {
+            document.getElementById('mobileno-error').innerText = 'Enter a valid 10-digit mobile number.';
+            setTimeout(function() {
+                document.getElementById('mobileno-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+
+        return true;
+    }
+</script>

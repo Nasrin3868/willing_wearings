@@ -1,0 +1,159 @@
+<%-include("../partials/userheader")-%>
+
+<div class="container mt-180 mb-180">
+    <div class="row">
+        <% if (total==0) { %>
+            <div class="table-responsive">
+                <div class="padding_eight_all bg-white">
+                        <div class="alert alert-danger text-center" role="alert">
+                            <p>Something went wrong...</p>
+                        </div>
+                </div>
+                <div class="text-center mt-50 ">
+                    <h5>Go back to home, <a href="/home"><i ></i>Home...</a> </h5>
+                </div>
+            </div>
+        <% }else{%>
+        <!-- Apply Coupon Box -->
+        <div class="col-lg-6">
+            <div class="mb-3">
+                <div class="row mt-5 mb-5 ">
+                    <% if (errmessage) { %>
+                        <div class="alert alert-danger text-center" role="alert">
+                            <%= errmessage %>
+                        </div>
+                    <% } else if (msg) { %>
+                        <div class="alert alert-success text-center" role="alert">
+                            <%= msg %>
+                        </div>
+                    <% } %>
+                </div>
+                <div class="heading_s1 mb-3">
+                    <h4>Apply Coupon</h4>
+                </div>
+                <div class="total-amount">
+                    <div class="left">
+                        <div class="coupon">
+                            <form onsubmit="return validateform()" action="/applyCoupon" method="post" >
+                                <div class="form-row row justify-content-center">
+                                    <div class="form-group col-lg-6">
+                                        <input class="font-medium" id="coupon" name="Coupon" placeholder="Enter Your Coupon">
+                                        <span id="coupon-error" style="color: red;"></span>
+                                    </div>
+                                    <div class="form-group col-lg-6">
+                                        <button type="submit" class="btn btn-sm" <i class="fi-rs-label mr-10"></i>Apply</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="form-group col-lg-6 text-center">
+                            <a class="btn btn-sm" href="/coupon"><i class="fi-rs-label mr-10"></i>See coupons</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Totals Box -->
+        <div class="col-lg-6">
+                    <div class="border p-md-4 p-30 border-radius cart-totals">
+                    <div class="heading_s1 mb-3">
+                        <h4>Cart Totals</h4>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td class="cart_total_label">Cart Subtotal</td>
+                                    <td class="cart_total_amount">
+                                        <span id="cart-subtotal" class="font-lg fw-900 text-brand">Rs.<%= total %></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="cart_total_label">Shipping</td>
+                                    <td class="cart_total_amount">
+                                        <i class="ti-gift mr-5"></i> Free Shipping
+                                    </td>
+                                </tr>
+                                <% if (offer !='') { %>
+                                    <tr>
+                                        <td class="cart_total_label">Category discount</td>
+                                        <td class="cart_total_amount">
+                                            <i class="ti-gift mr-5"></i> <%= categoryDiscount %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cart_total_label">Coupon discount</td>
+                                        <td class="cart_total_amount">
+                                            <i class="ti-gift mr-5"></i> <%= offer %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cart_total_label">Total</td>
+                                        <td class="cart_total_amount">
+                                            <strong>
+                                                <span id="cart-subtotal" class="font-lg fw-900 text-brand">Rs.<%= (total-categoryDiscount).toFixed(2) %> </span>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                <% } else { %>
+                                    <tr>
+                                        <td class="cart_total_label">Category discount</td>
+                                        <td class="cart_total_amount">
+                                            <i class="ti-gift mr-5"></i> <%= categoryDiscount %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cart_total_label">Coupon discount</td>
+                                        <td class="cart_total_amount">
+                                            <i class="ti-gift mr-5"></i> <%= discount %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cart_total_label">Total</td>
+                                        <td class="cart_total_amount">
+                                            <strong>
+                                                <span id="cart-subtotal" class="font-lg fw-900 text-brand">Rs.<%= (total-discount-categoryDiscount).toFixed(2) %> </span>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                        <a href="/checkout" class="btn">
+                            <i class="fi-rs-box-alt mr-10"></i> Proceed To CheckOut
+                        </a>
+                </div>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<%-include("../partials/userfooter")-%>
+
+<script>
+
+    function validateform(){
+        document.getElementById('coupon-error').innerHTML = '';
+
+        var coupon = document.getElementById('coupon').value;
+
+        var couponRegex= /^[A-Za-z0-9][A-Za-z0-9 ]*$/
+
+        if (coupon === '' || coupon.trim() === '') {
+            document.getElementById('coupon-error').innerHTML = 'coupon is required.';
+            setTimeout(function() {
+                document.getElementById('coupon-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+        if (!coupon.match(couponRegex)) {
+            document.getElementById('coupon-error').innerHTML = 'Enter a valid coupon.';
+            setTimeout(function() {
+                document.getElementById('coupon-error').innerHTML = '';
+            }, 5000);
+            return false;
+        }
+    }
+</script>

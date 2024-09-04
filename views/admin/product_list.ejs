@@ -1,0 +1,94 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+$(document).ready(function () {
+    new DataTable('#example');
+            
+})
+</script>
+
+
+<%- include("../partials/adminheader") %>
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Products List</h2>
+            <p>Lorem ipsum dolor sit amet.</p>
+        </div>
+        <div>
+            <a href="/admin/addproduct" class="btn btn-primary btn-sm rounded">Create new</a>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+            <!-- Add filtering options if needed -->
+            <!-- ... Filter options ... -->
+        </header> <!-- card-header end// -->
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table" id="example">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Product details</th>
+                            <th style="width: 10%;">Stock</th>
+                            <th style="width: 10%;">Actual_price</th>
+                            <th style="width: 10%;">Discount(%)</th>
+                            <th style="width: 10%;">Selling_price</th>
+                            <th style="width: 15%;">Status</th>
+                            <th style="width: 15%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Iterate through products -->
+                        <% products.forEach(function(product) { %>
+                            <tr class="text-center">
+                                <td>
+                                    <a class="itemside" href="#">
+                                        <div class="left">
+                                            <% if (product.images && product.images.length > 0) { %>
+                                                <img src="<%= product.images[0] %>" class="img-sm img-thumbnail" alt="Product">
+                                            <% } else { %>
+                                                <!-- Handle the case when there are no images for the product -->
+                                                <p>No images available</p>
+                                            <% } %>
+                                        </div>
+                                        <div class="info">
+                                            <h6 class="mb-0"><%= product.name %></h6>
+                                        </div>
+                                    </a>
+                                </td>
+                                <td style="width: 10%;"><%= product.stock %></td>
+                                <td style="width: 10%;"><%= product.price %>/-</td>
+                                <td style="width: 10%;"><%= product.discount %></td>
+                                <td style="width: 10%;"><%= product.sellingprice %>/-</td>
+                                <td style="width: 15%;">
+                                    <% if (product.blocked == true) { %>
+                                        <span class="badge rounded-pill alert-danger">Blocked</span>
+                                    <% } else { %>
+                                        <span class="badge rounded-pill alert-success">Unblocked</span>
+                                    <% } %>
+                                </td>
+                                <td style="width: 15%;">
+                                    <a href="/admin/edit-product/<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand">
+                                        <i class="material-icons md-edit"></i> Edit
+                                    </a>
+                                    <% if (product.blocked == true) { %>
+                                        <a class="btn btn-sm font-sm rounded btn-brand" style="background-color: rgb(185, 19, 19);"
+                                            href="/admin/productblock/<%= product._id %>">Unblock</a>
+                                    <% } else { %>
+                                        <a class="btn btn-sm font-sm rounded btn-brand" style="background-color: green;"
+                                            href="/admin/productblock/<%= product._id %>">Block</a>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div> <!-- table-responsive// -->
+        </div> <!-- card-body end// -->
+    </div> <!-- card end// -->
+</section> <!-- content-main end// -->
+
+<%- include("../partials/adminfooter") %>
