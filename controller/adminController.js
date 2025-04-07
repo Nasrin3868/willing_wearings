@@ -1,3 +1,6 @@
+// email:admin@gmail.com 
+// password: Admin@123
+
 const multer = require("multer");
 const easyimg = require("easyimage");
 const fs = require("fs");
